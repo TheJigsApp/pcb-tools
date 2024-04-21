@@ -262,7 +262,7 @@ class GerberParser(object):
 
     def parse(self, filename):
         self.filename = filename
-        with open(filename, "rU") as fp:
+        with open(filename, 'r', encoding="utf-8") as fp:
             data = fp.read()
         return self.parse_raw(data, filename)
 
