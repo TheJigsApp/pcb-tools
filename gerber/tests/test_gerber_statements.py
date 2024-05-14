@@ -21,8 +21,7 @@ def test_Statement_smoketest():
 
 
 def test_FSParamStmt_factory():
-    """ Test FSParamStruct factory
-    """
+    """Test FSParamStruct factory"""
     stmt = {"param": "FS", "zero": "L", "notation": "A", "x": "27"}
     fs = FSParamStmt.from_dict(stmt)
     assert fs.param == "FS"
@@ -39,8 +38,7 @@ def test_FSParamStmt_factory():
 
 
 def test_FSParamStmt():
-    """ Test FSParamStmt initialization
-    """
+    """Test FSParamStmt initialization"""
     param = "FS"
     zeros = "trailing"
     notation = "absolute"
@@ -53,8 +51,7 @@ def test_FSParamStmt():
 
 
 def test_FSParamStmt_dump():
-    """ Test FSParamStmt to_gerber()
-    """
+    """Test FSParamStmt to_gerber()"""
     stmt = {"param": "FS", "zero": "L", "notation": "A", "x": "27"}
     fs = FSParamStmt.from_dict(stmt)
     assert fs.to_gerber() == "%FSLAX27Y27*%"
@@ -68,8 +65,7 @@ def test_FSParamStmt_dump():
 
 
 def test_FSParamStmt_string():
-    """ Test FSParamStmt.__str__()
-    """
+    """Test FSParamStmt.__str__()"""
     stmt = {"param": "FS", "zero": "L", "notation": "A", "x": "27"}
     fs = FSParamStmt.from_dict(stmt)
     assert str(fs) == "<Format Spec: 2:7 leading zero suppression absolute notation>"
@@ -82,8 +78,7 @@ def test_FSParamStmt_string():
 
 
 def test_MOParamStmt_factory():
-    """ Test MOParamStruct factory
-    """
+    """Test MOParamStruct factory"""
     stmts = [{"param": "MO", "mo": "IN"}, {"param": "MO", "mo": "in"}]
     for stmt in stmts:
         mo = MOParamStmt.from_dict(stmt)
@@ -104,8 +99,7 @@ def test_MOParamStmt_factory():
 
 
 def test_MOParamStmt():
-    """ Test MOParamStmt initialization
-    """
+    """Test MOParamStmt initialization"""
     param = "MO"
     mode = "inch"
     stmt = MOParamStmt(param, mode)
@@ -117,8 +111,7 @@ def test_MOParamStmt():
 
 
 def test_MOParamStmt_dump():
-    """ Test MOParamStmt to_gerber()
-    """
+    """Test MOParamStmt to_gerber()"""
     stmt = {"param": "MO", "mo": "IN"}
     mo = MOParamStmt.from_dict(stmt)
     assert mo.to_gerber() == "%MOIN*%"
@@ -141,8 +134,7 @@ def test_MOParamStmt_conversion():
 
 
 def test_MOParamStmt_string():
-    """ Test MOParamStmt.__str__()
-    """
+    """Test MOParamStmt.__str__()"""
     stmt = {"param": "MO", "mo": "IN"}
     mo = MOParamStmt.from_dict(stmt)
     assert str(mo) == "<Mode: inches>"
@@ -153,8 +145,7 @@ def test_MOParamStmt_string():
 
 
 def test_IPParamStmt_factory():
-    """ Test IPParamStruct factory
-    """
+    """Test IPParamStruct factory"""
     stmt = {"param": "IP", "ip": "POS"}
     ip = IPParamStmt.from_dict(stmt)
     assert ip.ip == "positive"
@@ -165,8 +156,7 @@ def test_IPParamStmt_factory():
 
 
 def test_IPParamStmt():
-    """ Test IPParamStmt initialization
-    """
+    """Test IPParamStmt initialization"""
     param = "IP"
     for ip in ["positive", "negative"]:
         stmt = IPParamStmt(param, ip)
@@ -175,8 +165,7 @@ def test_IPParamStmt():
 
 
 def test_IPParamStmt_dump():
-    """ Test IPParamStmt to_gerber()
-    """
+    """Test IPParamStmt to_gerber()"""
     stmt = {"param": "IP", "ip": "POS"}
     ip = IPParamStmt.from_dict(stmt)
     assert ip.to_gerber() == "%IPPOS*%"
@@ -216,8 +205,7 @@ def test_IRParamStmt_string():
 
 
 def test_OFParamStmt_factory():
-    """ Test OFParamStmt factory
-    """
+    """Test OFParamStmt factory"""
     stmt = {"param": "OF", "a": "0.1234567", "b": "0.1234567"}
     of = OFParamStmt.from_dict(stmt)
     assert of.a == 0.1234567
@@ -225,8 +213,7 @@ def test_OFParamStmt_factory():
 
 
 def test_OFParamStmt():
-    """ Test IPParamStmt initialization
-    """
+    """Test IPParamStmt initialization"""
     param = "OF"
     for val in [0.0, -3.4567]:
         stmt = OFParamStmt(param, val, val)
@@ -236,8 +223,7 @@ def test_OFParamStmt():
 
 
 def test_OFParamStmt_dump():
-    """ Test OFParamStmt to_gerber()
-    """
+    """Test OFParamStmt to_gerber()"""
     stmt = {"param": "OF", "a": "0.123456", "b": "0.123456"}
     of = OFParamStmt.from_dict(stmt)
     assert of.to_gerber() == "%OFA0.12345B0.12345*%"
@@ -294,8 +280,7 @@ def test_OFParamStmt_offset():
 
 
 def test_OFParamStmt_string():
-    """ Test OFParamStmt __str__
-    """
+    """Test OFParamStmt __str__"""
     stmt = {"param": "OF", "a": "0.123456", "b": "0.123456"}
     of = OFParamStmt.from_dict(stmt)
     assert str(of) == "<Offset: X: 0.123456 Y: 0.123456 >"
@@ -372,8 +357,7 @@ def test_SFParamStmt_string():
 
 
 def test_LPParamStmt_factory():
-    """ Test LPParamStmt factory
-    """
+    """Test LPParamStmt factory"""
     stmt = {"param": "LP", "lp": "C"}
     lp = LPParamStmt.from_dict(stmt)
     assert lp.lp == "clear"
@@ -384,8 +368,7 @@ def test_LPParamStmt_factory():
 
 
 def test_LPParamStmt_dump():
-    """ Test LPParamStmt to_gerber()
-    """
+    """Test LPParamStmt to_gerber()"""
     stmt = {"param": "LP", "lp": "C"}
     lp = LPParamStmt.from_dict(stmt)
     assert lp.to_gerber() == "%LPC*%"
@@ -396,8 +379,7 @@ def test_LPParamStmt_dump():
 
 
 def test_LPParamStmt_string():
-    """ Test LPParamStmt.__str__()
-    """
+    """Test LPParamStmt.__str__()"""
     stmt = {"param": "LP", "lp": "D"}
     lp = LPParamStmt.from_dict(stmt)
     assert str(lp) == "<Level Polarity: dark>"
@@ -523,16 +505,14 @@ def test_ASParamStmt_string():
 
 
 def test_INParamStmt_factory():
-    """ Test INParamStmt factory
-    """
+    """Test INParamStmt factory"""
     stmt = {"param": "IN", "name": "test"}
     inp = INParamStmt.from_dict(stmt)
     assert inp.name == "test"
 
 
 def test_INParamStmt_dump():
-    """ Test INParamStmt to_gerber()
-    """
+    """Test INParamStmt to_gerber()"""
     stmt = {"param": "IN", "name": "test"}
     inp = INParamStmt.from_dict(stmt)
     assert inp.to_gerber() == "%INtest*%"
@@ -545,16 +525,14 @@ def test_INParamStmt_string():
 
 
 def test_LNParamStmt_factory():
-    """ Test LNParamStmt factory
-    """
+    """Test LNParamStmt factory"""
     stmt = {"param": "LN", "name": "test"}
     lnp = LNParamStmt.from_dict(stmt)
     assert lnp.name == "test"
 
 
 def test_LNParamStmt_dump():
-    """ Test LNParamStmt to_gerber()
-    """
+    """Test LNParamStmt to_gerber()"""
     stmt = {"param": "LN", "name": "test"}
     lnp = LNParamStmt.from_dict(stmt)
     assert lnp.to_gerber() == "%LNtest*%"
@@ -567,16 +545,14 @@ def test_LNParamStmt_string():
 
 
 def test_comment_stmt():
-    """ Test comment statement
-    """
+    """Test comment statement"""
     stmt = CommentStmt("A comment")
     assert stmt.type == "COMMENT"
     assert stmt.comment == "A comment"
 
 
 def test_comment_stmt_dump():
-    """ Test CommentStmt to_gerber()
-    """
+    """Test CommentStmt to_gerber()"""
     stmt = CommentStmt("A comment")
     assert stmt.to_gerber() == "G04A comment*"
 
@@ -587,15 +563,13 @@ def test_comment_stmt_string():
 
 
 def test_eofstmt():
-    """ Test EofStmt
-    """
+    """Test EofStmt"""
     stmt = EofStmt()
     assert stmt.type == "EOF"
 
 
 def test_eofstmt_dump():
-    """ Test EofStmt to_gerber()
-    """
+    """Test EofStmt to_gerber()"""
     stmt = EofStmt()
     assert stmt.to_gerber() == "M02*"
 
@@ -605,8 +579,7 @@ def test_eofstmt_string():
 
 
 def test_quadmodestmt_factory():
-    """ Test QuadrantModeStmt.from_gerber()
-    """
+    """Test QuadrantModeStmt.from_gerber()"""
     line = "G74*"
     stmt = QuadrantModeStmt.from_gerber(line)
     assert stmt.type == "QuadrantMode"
@@ -618,24 +591,21 @@ def test_quadmodestmt_factory():
 
 
 def test_quadmodestmt_validation():
-    """ Test QuadrantModeStmt input validation
-    """
+    """Test QuadrantModeStmt input validation"""
     line = "G76*"
     pytest.raises(ValueError, QuadrantModeStmt.from_gerber, line)
     pytest.raises(ValueError, QuadrantModeStmt, "quadrant-ful")
 
 
 def test_quadmodestmt_dump():
-    """ Test QuadrantModeStmt.to_gerber()
-    """
+    """Test QuadrantModeStmt.to_gerber()"""
     for line in ("G74*", "G75*"):
         stmt = QuadrantModeStmt.from_gerber(line)
         assert stmt.to_gerber() == line
 
 
 def test_regionmodestmt_factory():
-    """ Test RegionModeStmt.from_gerber()
-    """
+    """Test RegionModeStmt.from_gerber()"""
     line = "G36*"
     stmt = RegionModeStmt.from_gerber(line)
     assert stmt.type == "RegionMode"
@@ -647,24 +617,21 @@ def test_regionmodestmt_factory():
 
 
 def test_regionmodestmt_validation():
-    """ Test RegionModeStmt input validation
-    """
+    """Test RegionModeStmt input validation"""
     line = "G38*"
     pytest.raises(ValueError, RegionModeStmt.from_gerber, line)
     pytest.raises(ValueError, RegionModeStmt, "off-ish")
 
 
 def test_regionmodestmt_dump():
-    """ Test RegionModeStmt.to_gerber()
-    """
+    """Test RegionModeStmt.to_gerber()"""
     for line in ("G36*", "G37*"):
         stmt = RegionModeStmt.from_gerber(line)
         assert stmt.to_gerber() == line
 
 
 def test_unknownstmt():
-    """ Test UnknownStmt
-    """
+    """Test UnknownStmt"""
     line = "G696969*"
     stmt = UnknownStmt(line)
     assert stmt.type == "UNKNOWN"
@@ -672,8 +639,7 @@ def test_unknownstmt():
 
 
 def test_unknownstmt_dump():
-    """ Test UnknownStmt.to_gerber()
-    """
+    """Test UnknownStmt.to_gerber()"""
     lines = ("G696969*", "M03*")
     for line in lines:
         stmt = UnknownStmt(line)
@@ -681,8 +647,7 @@ def test_unknownstmt_dump():
 
 
 def test_statement_string():
-    """ Test Statement.__str__()
-    """
+    """Test Statement.__str__()"""
     stmt = Statement("PARAM")
     assert "type=PARAM" in str(stmt)
     stmt.test = "PASS"
@@ -691,8 +656,7 @@ def test_statement_string():
 
 
 def test_ADParamStmt_factory():
-    """ Test ADParamStmt factory
-    """
+    """Test ADParamStmt factory"""
     stmt = {"param": "AD", "d": 0, "shape": "C"}
     ad = ADParamStmt.from_dict(stmt)
     assert ad.d == 0

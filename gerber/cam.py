@@ -24,7 +24,7 @@ This module provides common base classes for Excellon/Gerber CNC files
 
 
 class FileSettings(object):
-    """ CAM File Settings
+    """CAM File Settings
 
     Provides a common representation of gerber/excellon file settings
 
@@ -54,42 +54,50 @@ class FileSettings(object):
     and vice versa
     """
 
-    def __init__(self, notation='absolute', units='inch',
-                 zero_suppression=None, format=(2, 5), zeros=None,
-                 angle_units='degrees'):
-        if notation not in ['absolute', 'incremental']:
-            raise ValueError('Notation must be either absolute or incremental')
+    def __init__(
+        self,
+        notation="absolute",
+        units="inch",
+        zero_suppression=None,
+        format=(2, 5),
+        zeros=None,
+        angle_units="degrees",
+    ):
+        if notation not in ["absolute", "incremental"]:
+            raise ValueError("Notation must be either absolute or incremental")
         self.notation = notation
 
-        if units not in ['inch', 'metric']:
-            raise ValueError('Units must be either inch or metric')
+        if units not in ["inch", "metric"]:
+            raise ValueError("Units must be either inch or metric")
         self.units = units
 
         if zero_suppression is None and zeros is None:
-            self.zero_suppression = 'trailing'
+            self.zero_suppression = "trailing"
 
         elif zero_suppression == zeros:
-            raise ValueError('Zeros and Zero Suppression must be different. \
-                             Best practice is to specify only one.')
+            raise ValueError(
+                "Zeros and Zero Suppression must be different. \
+                             Best practice is to specify only one."
+            )
 
         elif zero_suppression is not None:
-            if zero_suppression not in ['leading', 'trailing']:
+            if zero_suppression not in ["leading", "trailing"]:
                 # This is a common problem in Eagle files, so just suppress it
-                self.zero_suppression = 'leading'
+                self.zero_suppression = "leading"
             else:
                 self.zero_suppression = zero_suppression
 
         elif zeros is not None:
-            if zeros not in ['leading', 'trailing']:
-                raise ValueError('Zeros must be either leading or trailling')
+            if zeros not in ["leading", "trailing"]:
+                raise ValueError("Zeros must be either leading or trailling")
             self.zeros = zeros
 
         if len(format) != 2:
-            raise ValueError('Format must be a tuple(n=2) of integers')
+            raise ValueError("Format must be a tuple(n=2) of integers")
         self.format = format
 
-        if angle_units not in ('degrees', 'radians'):
-            raise ValueError('Angle units may be degrees or radians')
+        if angle_units not in ("degrees", "radians"):
+            raise ValueError("Angle units may be degrees or radians")
         self.angle_units = angle_units
 
     @property
@@ -99,7 +107,7 @@ class FileSettings(object):
     @zero_suppression.setter
     def zero_suppression(self, value):
         self._zero_suppression = value
-        self._zeros = 'leading' if value == 'trailing' else 'trailing'
+        self._zeros = "leading" if value == "trailing" else "trailing"
 
     @property
     def zeros(self):
@@ -107,75 +115,85 @@ class FileSettings(object):
 
     @zeros.setter
     def zeros(self, value):
-
         self._zeros = value
-        self._zero_suppression = 'leading' if value == 'trailing' else 'trailing'
+        self._zero_suppression = "leading" if value == "trailing" else "trailing"
 
     def __getitem__(self, key):
-        if key == 'notation':
+        if key == "notation":
             return self.notation
-        elif key == 'units':
+        elif key == "units":
             return self.units
-        elif key == 'zero_suppression':
+        elif key == "zero_suppression":
             return self.zero_suppression
-        elif key == 'zeros':
+        elif key == "zeros":
             return self.zeros
-        elif key == 'format':
+        elif key == "format":
             return self.format
-        elif key == 'angle_units':
+        elif key == "angle_units":
             return self.angle_units
         else:
             raise KeyError()
 
     def __setitem__(self, key, value):
-        if key == 'notation':
-            if value not in ['absolute', 'incremental']:
-                raise ValueError('Notation must be either \
-                                 absolute or incremental')
+        if key == "notation":
+            if value not in ["absolute", "incremental"]:
+                raise ValueError(
+                    "Notation must be either \
+                                 absolute or incremental"
+                )
             self.notation = value
-        elif key == 'units':
-            if value not in ['inch', 'metric']:
-                raise ValueError('Units must be either inch or metric')
+        elif key == "units":
+            if value not in ["inch", "metric"]:
+                raise ValueError("Units must be either inch or metric")
             self.units = value
 
-        elif key == 'zero_suppression':
-            if value not in ['leading', 'trailing']:
-                raise ValueError('Zero suppression must be either leading or \
-                                 trailling')
+        elif key == "zero_suppression":
+            if value not in ["leading", "trailing"]:
+                raise ValueError(
+                    "Zero suppression must be either leading or \
+                                 trailling"
+                )
             self.zero_suppression = value
 
-        elif key == 'zeros':
-            if value not in ['leading', 'trailing']:
-                raise ValueError('Zeros must be either leading or trailling')
+        elif key == "zeros":
+            if value not in ["leading", "trailing"]:
+                raise ValueError("Zeros must be either leading or trailling")
             self.zeros = value
 
-        elif key == 'format':
+        elif key == "format":
             if len(value) != 2:
-                raise ValueError('Format must be a tuple(n=2) of integers')
+                raise ValueError("Format must be a tuple(n=2) of integers")
             self.format = value
 
-        elif key == 'angle_units':
-            if value not in ('degrees', 'radians'):
-                raise ValueError('Angle units may be degrees or radians')
+        elif key == "angle_units":
+            if value not in ("degrees", "radians"):
+                raise ValueError("Angle units may be degrees or radians")
             self.angle_units = value
 
         else:
-            raise KeyError('%s is not a valid key' % key)
+            raise KeyError("%s is not a valid key" % key)
 
     def __eq__(self, other):
-        return (self.notation == other.notation and
-                self.units == other.units and
-                self.zero_suppression == other.zero_suppression and
-                self.format == other.format and
-                self.angle_units == other.angle_units)
+        return (
+            self.notation == other.notation
+            and self.units == other.units
+            and self.zero_suppression == other.zero_suppression
+            and self.format == other.format
+            and self.angle_units == other.angle_units
+        )
 
     def __str__(self):
-        return ('<Settings: %s %s %s %s %s>' %
-                (self.units, self.notation, self.zero_suppression, self.format, self.angle_units))
+        return "<Settings: %s %s %s %s %s>" % (
+            self.units,
+            self.notation,
+            self.zero_suppression,
+            self.format,
+            self.angle_units,
+        )
 
 
 class CamFile(object):
-    """ Base class for Gerber/Excellon files.
+    """Base class for Gerber/Excellon files.
 
     Provides a common set of settings parameters.
 
@@ -212,19 +230,25 @@ class CamFile(object):
         decimal digits)
     """
 
-    def __init__(self, statements=None, settings=None, primitives=None,
-                 filename=None, layer_name=None):
+    def __init__(
+        self,
+        statements=None,
+        settings=None,
+        primitives=None,
+        filename=None,
+        layer_name=None,
+    ):
         if settings is not None:
-            self.notation = settings['notation']
-            self.units = settings['units']
-            self.zero_suppression = settings['zero_suppression']
-            self.zeros = settings['zeros']
-            self.format = settings['format']
+            self.notation = settings["notation"]
+            self.units = settings["units"]
+            self.zero_suppression = settings["zero_suppression"]
+            self.zeros = settings["zeros"]
+            self.format = settings["format"]
         else:
-            self.notation = 'absolute'
-            self.units = 'inch'
-            self.zero_suppression = 'trailing'
-            self.zeros = 'leading'
+            self.notation = "absolute"
+            self.units = "inch"
+            self.zero_suppression = "trailing"
+            self.zeros = "leading"
             self.format = (2, 5)
         self.statements = statements if statements is not None else []
         if primitives is not None:
@@ -234,20 +258,20 @@ class CamFile(object):
 
     @property
     def settings(self):
-        """ File settings
+        """File settings
 
         Returns
         -------
         settings : FileSettings (dict-like)
             A FileSettings object with the specified configuration.
         """
-        return FileSettings(self.notation, self.units, self.zero_suppression,
-                            self.format)
+        return FileSettings(
+            self.notation, self.units, self.zero_suppression, self.format
+        )
 
     @property
     def bounds(self):
-        """ File boundaries
-        """
+        """File boundaries"""
         pass
 
     @property
@@ -261,7 +285,7 @@ class CamFile(object):
         pass
 
     def render(self, ctx=None, invert=False, filename=None):
-        """ Generate image of layer.
+        """Generate image of layer.
 
         Parameters
         ----------
@@ -273,6 +297,7 @@ class CamFile(object):
         """
         if ctx is None:
             from .render import GerberCairoContext
+
             ctx = GerberCairoContext()
         ctx.set_bounds(self.bounding_box)
         ctx.paint_background()

@@ -15,8 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" This module provides RS-274-X AM macro modifiers parsing.
-"""
+"""This module provides RS-274-X AM macro modifiers parsing."""
 
 from .am_eval import OpCode, eval_macro
 
@@ -63,7 +62,6 @@ def is_op(token):
 
 
 class Scanner:
-
     def __init__(self, s):
         self.buff = s
         self.n = 0
@@ -113,15 +111,16 @@ class Scanner:
 
 def print_instructions(instructions):
     for opcode, argument in instructions:
-        print("%s %s" % (OpCode.str(opcode),
-                         str(argument) if argument is not None else ""))
+        print(
+            "%s %s"
+            % (OpCode.str(opcode), str(argument) if argument is not None else "")
+        )
 
 
 def read_macro(macro):
     instructions = []
 
     for block in macro.split("*"):
-
         is_primitive = False
         is_equation = False
 
@@ -157,7 +156,6 @@ def read_macro(macro):
             return len(op_stack) == 0
 
         while not scanner.eof():
-
             c = scanner.getc()
 
             if c == ",":
@@ -175,7 +173,9 @@ def read_macro(macro):
                     unary_minus_allowed = False
                     continue
 
-                while not empty() and is_op(top()) and precedence(top()) >= precedence(c):
+                while (
+                    not empty() and is_op(top()) and precedence(top()) >= precedence(c)
+                ):
                     instructions.append((token_to_opcode(pop()), None))
 
                 push(c)
@@ -211,7 +211,7 @@ def read_macro(macro):
                     found_primitive_code = True
                 else:
                     # decimal or integer disambiguation
-                    if scanner.peek() not in '.' or scanner.peek() == Token.EOF:
+                    if scanner.peek() not in "." or scanner.peek() == Token.EOF:
                         instructions.append((OpCode.PUSH, 0))
                         unary_minus_allowed = False
 
@@ -245,7 +245,8 @@ def read_macro(macro):
 
     return instructions
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import sys
 
     instructions = read_macro(sys.argv[1])

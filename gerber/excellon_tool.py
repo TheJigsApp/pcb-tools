@@ -24,15 +24,17 @@ This module provides Excellon file classes and parsing utilities
 """
 
 import re
+
 try:
     from cStringIO import StringIO
-except(ImportError):
+except ImportError:
     from io import StringIO
 
 from .excellon_statements import ExcellonTool
 
+
 def loads(data, settings=None):
-    """ Read tool file information and return a map of tools
+    """Read tool file information and return a map of tools
     Parameters
     ----------
     data : string
@@ -45,27 +47,38 @@ def loads(data, settings=None):
     """
     return ExcellonToolDefinitionParser(settings).parse_raw(data)
 
+
 class ExcellonToolDefinitionParser(object):
-    """ Excellon File Parser
+    """Excellon File Parser
 
     Parameters
     ----------
     None
     """
 
-    allegro_tool = re.compile(r'(?P<size>[0-9/.]+)\s+(?P<plated>P|N)\s+T(?P<toolid>[0-9]{2})\s+(?P<xtol>[0-9/.]+)\s+(?P<ytol>[0-9/.]+)')
-    allegro_comment_mils = re.compile('Holesize (?P<toolid>[0-9]{1,2})\. = (?P<size>[0-9/.]+) Tolerance = \+(?P<xtol>[0-9/.]+)/-(?P<ytol>[0-9/.]+) (?P<plated>(PLATED)|(NON_PLATED)|(OPTIONAL)) MILS Quantity = [0-9]+')
-    allegro2_comment_mils = re.compile('T(?P<toolid>[0-9]{1,2}) Holesize (?P<toolid2>[0-9]{1,2})\. = (?P<size>[0-9/.]+) Tolerance = \+(?P<xtol>[0-9/.]+)/-(?P<ytol>[0-9/.]+) (?P<plated>(PLATED)|(NON_PLATED)|(OPTIONAL)) MILS Quantity = [0-9]+')
-    allegro_comment_mm = re.compile('Holesize (?P<toolid>[0-9]{1,2})\. = (?P<size>[0-9/.]+) Tolerance = \+(?P<xtol>[0-9/.]+)/-(?P<ytol>[0-9/.]+) (?P<plated>(PLATED)|(NON_PLATED)|(OPTIONAL)) MM Quantity = [0-9]+')
-    allegro2_comment_mm = re.compile('T(?P<toolid>[0-9]{1,2}) Holesize (?P<toolid2>[0-9]{1,2})\. = (?P<size>[0-9/.]+) Tolerance = \+(?P<xtol>[0-9/.]+)/-(?P<ytol>[0-9/.]+) (?P<plated>(PLATED)|(NON_PLATED)|(OPTIONAL)) MM Quantity = [0-9]+')
+    allegro_tool = re.compile(
+        r"(?P<size>[0-9/.]+)\s+(?P<plated>P|N)\s+T(?P<toolid>[0-9]{2})\s+(?P<xtol>[0-9/.]+)\s+(?P<ytol>[0-9/.]+)"
+    )
+    allegro_comment_mils = re.compile(
+        "Holesize (?P<toolid>[0-9]{1,2})\. = (?P<size>[0-9/.]+) Tolerance = \+(?P<xtol>[0-9/.]+)/-(?P<ytol>[0-9/.]+) (?P<plated>(PLATED)|(NON_PLATED)|(OPTIONAL)) MILS Quantity = [0-9]+"
+    )
+    allegro2_comment_mils = re.compile(
+        "T(?P<toolid>[0-9]{1,2}) Holesize (?P<toolid2>[0-9]{1,2})\. = (?P<size>[0-9/.]+) Tolerance = \+(?P<xtol>[0-9/.]+)/-(?P<ytol>[0-9/.]+) (?P<plated>(PLATED)|(NON_PLATED)|(OPTIONAL)) MILS Quantity = [0-9]+"
+    )
+    allegro_comment_mm = re.compile(
+        "Holesize (?P<toolid>[0-9]{1,2})\. = (?P<size>[0-9/.]+) Tolerance = \+(?P<xtol>[0-9/.]+)/-(?P<ytol>[0-9/.]+) (?P<plated>(PLATED)|(NON_PLATED)|(OPTIONAL)) MM Quantity = [0-9]+"
+    )
+    allegro2_comment_mm = re.compile(
+        "T(?P<toolid>[0-9]{1,2}) Holesize (?P<toolid2>[0-9]{1,2})\. = (?P<size>[0-9/.]+) Tolerance = \+(?P<xtol>[0-9/.]+)/-(?P<ytol>[0-9/.]+) (?P<plated>(PLATED)|(NON_PLATED)|(OPTIONAL)) MM Quantity = [0-9]+"
+    )
 
     matchers = [
-                (allegro_tool, 'mils'),
-                (allegro_comment_mils, 'mils'),
-                (allegro2_comment_mils, 'mils'),
-                (allegro_comment_mm, 'mm'),
-                (allegro2_comment_mm, 'mm'),
-                ]
+        (allegro_tool, "mils"),
+        (allegro_comment_mils, "mils"),
+        (allegro2_comment_mils, "mils"),
+        (allegro_comment_mm, "mm"),
+        (allegro2_comment_mm, "mm"),
+    ]
 
     def __init__(self, settings=None):
         self.tools = {}
@@ -78,53 +91,51 @@ class ExcellonToolDefinitionParser(object):
         return self.tools
 
     def _parse(self, line):
-
         for matcher in ExcellonToolDefinitionParser.matchers:
             m = matcher[0].match(line)
             if m:
                 unit = matcher[1]
 
-                size = float(m.group('size'))
-                platedstr = m.group('plated')
-                toolid = int(m.group('toolid'))
-                xtol = float(m.group('xtol'))
-                ytol = float(m.group('ytol'))
+                size = float(m.group("size"))
+                platedstr = m.group("plated")
+                toolid = int(m.group("toolid"))
+                xtol = float(m.group("xtol"))
+                ytol = float(m.group("ytol"))
 
                 size = self._convert_length(size, unit)
                 xtol = self._convert_length(xtol, unit)
                 ytol = self._convert_length(ytol, unit)
 
-                if platedstr == 'PLATED':
+                if platedstr == "PLATED":
                     plated = ExcellonTool.PLATED_YES
-                elif platedstr == 'NON_PLATED':
+                elif platedstr == "NON_PLATED":
                     plated = ExcellonTool.PLATED_NO
-                elif platedstr == 'OPTIONAL':
+                elif platedstr == "OPTIONAL":
                     plated = ExcellonTool.PLATED_OPTIONAL
                 else:
                     plated = ExcellonTool.PLATED_UNKNOWN
 
-                tool = ExcellonTool(None, number=toolid, diameter=size,
-                                    plated=plated)
+                tool = ExcellonTool(None, number=toolid, diameter=size, plated=plated)
 
                 self.tools[tool.number] = tool
 
                 break
 
     def _convert_length(self, value, unit):
-
         # Convert the value to mm
-        if unit == 'mils':
+        if unit == "mils":
             value /= 39.3700787402
 
         # Now convert to the settings unit
-        if self.settings.units == 'inch':
+        if self.settings.units == "inch":
             return value / 25.4
         else:
             # Already in mm
             return value
 
+
 def loads_rep(data, settings=None):
-    """ Read tool report information generated by PADS and return a map of tools
+    """Read tool report information generated by PADS and return a map of tools
     Parameters
     ----------
     data : string
@@ -137,11 +148,11 @@ def loads_rep(data, settings=None):
     """
     return ExcellonReportParser(settings).parse_raw(data)
 
-class ExcellonReportParser(object):
 
+class ExcellonReportParser(object):
     # We sometimes get files with different encoding, so we can't actually
     # match the text - the best we can do it detect the table header
-    header = re.compile(r'====\s+====\s+====\s+====\s+=====\s+===')
+    header = re.compile(r"====\s+====\s+====\s+====\s+=====\s+===")
 
     def __init__(self, settings=None):
         self.tools = {}
@@ -156,7 +167,6 @@ class ExcellonReportParser(object):
         return self.tools
 
     def _parse(self, line):
-
         # skip empty lines and "comments"
         if not line.strip():
             return
@@ -167,15 +177,15 @@ class ExcellonReportParser(object):
             if ExcellonReportParser.header.match(line):
                 self.found_header = True
 
-        elif  line[0] != '=':
+        elif line[0] != "=":
             # Already found the header, so we know to to map the contents
             parts = line.split()
             if len(parts) == 6:
                 toolid = int(parts[0])
                 size = float(parts[1])
-                if parts[2] == 'x':
+                if parts[2] == "x":
                     plated = ExcellonTool.PLATED_YES
-                elif parts[2] == '-':
+                elif parts[2] == "-":
                     plated = ExcellonTool.PLATED_NO
                 else:
                     plated = ExcellonTool.PLATED_UNKNOWN
@@ -183,8 +193,13 @@ class ExcellonReportParser(object):
                 speed = int(parts[4])
                 qty = int(parts[5])
 
-                tool = ExcellonTool(None, number=toolid, diameter=size,
-                                    plated=plated, feed_rate=feedrate,
-                                    rpm=speed)
+                tool = ExcellonTool(
+                    None,
+                    number=toolid,
+                    diameter=size,
+                    plated=plated,
+                    feed_rate=feedrate,
+                    rpm=speed,
+                )
 
                 self.tools[tool.number] = tool

@@ -1,12 +1,11 @@
-
 from .render import GerberContext
 from ..excellon import DrillSlot
 from ..excellon_statements import *
 
-class ExcellonContext(GerberContext):
 
+class ExcellonContext(GerberContext):
     MODE_DRILL = 1
-    MODE_SLOT =2
+    MODE_SLOT = 2
 
     def __init__(self, settings):
         GerberContext.__init__(self)
@@ -36,15 +35,18 @@ class ExcellonContext(GerberContext):
 
         self.header.append(UnitStmt.from_settings(self.settings))
 
-        if self.settings.notation == 'incremental':
-            raise NotImplementedError('Incremental mode is not implemented')
+        if self.settings.notation == "incremental":
+            raise NotImplementedError("Incremental mode is not implemented")
         else:
             self.body.append(AbsoluteModeStmt())
 
     def _start_comments(self):
-
         # Write the digits used - this isn't valid Excellon statement, so we write as a comment
-        self.comments.append(CommentStmt('FILE_FORMAT=%d:%d' % (self.settings.format[0], self.settings.format[1])))
+        self.comments.append(
+            CommentStmt(
+                "FILE_FORMAT=%d:%d" % (self.settings.format[0], self.settings.format[1])
+            )
+        )
 
     def _get_end(self):
         """How we end depends on our mode"""
@@ -61,7 +63,14 @@ class ExcellonContext(GerberContext):
 
     @property
     def statements(self):
-        return self.start + self.comments + self.header + self.body_start + self.body + self._get_end()
+        return (
+            self.start
+            + self.comments
+            + self.header
+            + self.body_start
+            + self.body
+            + self._get_end()
+        )
 
     def set_bounds(self, bounds, *args, **kwargs):
         pass
@@ -70,38 +79,41 @@ class ExcellonContext(GerberContext):
         pass
 
     def _render_line(self, line, color):
-        raise ValueError('Invalid Excellon object')
+        raise ValueError("Invalid Excellon object")
+
     def _render_arc(self, arc, color):
-        raise ValueError('Invalid Excellon object')
+        raise ValueError("Invalid Excellon object")
 
     def _render_region(self, region, color):
-        raise ValueError('Invalid Excellon object')
+        raise ValueError("Invalid Excellon object")
 
     def _render_level_polarity(self, region):
-        raise ValueError('Invalid Excellon object')
+        raise ValueError("Invalid Excellon object")
 
     def _render_circle(self, circle, color):
-        raise ValueError('Invalid Excellon object')
+        raise ValueError("Invalid Excellon object")
 
     def _render_rectangle(self, rectangle, color):
-        raise ValueError('Invalid Excellon object')
+        raise ValueError("Invalid Excellon object")
 
     def _render_obround(self, obround, color):
-        raise ValueError('Invalid Excellon object')
+        raise ValueError("Invalid Excellon object")
 
     def _render_polygon(self, polygon, color):
-        raise ValueError('Invalid Excellon object')
+        raise ValueError("Invalid Excellon object")
 
     def _simplify_point(self, point):
-        return (point[0] if point[0] != self._pos[0] else None, point[1] if point[1] != self._pos[1] else None)
+        return (
+            point[0] if point[0] != self._pos[0] else None,
+            point[1] if point[1] != self._pos[1] else None,
+        )
 
     def _render_drill(self, drill, color):
-
         if self.drill_mode != ExcellonContext.MODE_DRILL:
             self._start_drill_mode()
 
         tool = drill.hit.tool
-        if not tool in self.handled_tools:
+        if tool not in self.handled_tools:
             self.handled_tools.add(tool)
             self.header.append(ExcellonTool.from_tool(tool))
 
@@ -119,7 +131,6 @@ class ExcellonContext(GerberContext):
         """
 
         if self.drill_mode == ExcellonContext.MODE_SLOT:
-
             # Make sure we are retracted before changing modes
             last_cmd = self.body[-1]
             if self.drill_down:
@@ -132,13 +143,12 @@ class ExcellonContext(GerberContext):
             self.drill_mode = ExcellonContext.MODE_DRILL
 
         else:
-            raise ValueError('Should be in slot mode')
+            raise ValueError("Should be in slot mode")
 
     def _render_slot(self, slot, color):
-
         # Set the tool first, before we might go into drill mode
         tool = slot.hit.tool
-        if not tool in self.handled_tools:
+        if tool not in self.handled_tools:
             self.handled_tools.add(tool)
             self.header.append(ExcellonTool.from_tool(tool))
 
@@ -148,7 +158,6 @@ class ExcellonContext(GerberContext):
 
         # Two types of drilling - normal drill and slots
         if slot.hit.slot_type == DrillSlot.TYPE_ROUT:
-
             # For ROUT, setting the mode is part of the actual command.
 
             # Are we in the right position?

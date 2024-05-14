@@ -24,15 +24,11 @@ Render Gerber and Excellon files to a variety of formats. The render module
 currently supports SVG rendering using the `svgwrite` library.
 """
 
-
 from ..primitives import *
-from ..gerber_statements import (CommentStmt, UnknownStmt, EofStmt, ParamStmt,
-                                 CoordStmt, ApertureStmt, RegionModeStmt,
-                                 QuadrantModeStmt,)
 
 
 class GerberContext(object):
-    """ Gerber rendering context base class
+    """Gerber rendering context base class
 
     Provides basic functionality and API for rendering gerber files.  Medium-
     specific renderers should subclass GerberContext and implement the drawing
@@ -59,7 +55,7 @@ class GerberContext(object):
         Rendering opacity. Between 0.0 (transparent) and 1.0 (opaque.)
     """
 
-    def __init__(self, units='inch'):
+    def __init__(self, units="inch"):
         self._units = units
         self._color = (0.7215, 0.451, 0.200)
         self._background_color = (0.0, 0.0, 0.0)
@@ -74,7 +70,7 @@ class GerberContext(object):
 
     @units.setter
     def units(self, units):
-        if units not in ('inch', 'metric'):
+        if units not in ("inch", "metric"):
             raise ValueError('Units may be "inch" or "metric"')
         self._units = units
 
@@ -85,10 +81,10 @@ class GerberContext(object):
     @color.setter
     def color(self, color):
         if len(color) != 3:
-            raise TypeError('Color must be a tuple of R, G, and B values')
+            raise TypeError("Color must be a tuple of R, G, and B values")
         for c in color:
             if c < 0 or c > 1:
-                raise ValueError('Channel values must be between 0.0 and 1.0')
+                raise ValueError("Channel values must be between 0.0 and 1.0")
         self._color = color
 
     @property
@@ -98,10 +94,10 @@ class GerberContext(object):
     @drill_color.setter
     def drill_color(self, color):
         if len(color) != 3:
-            raise TypeError('Drill color must be a tuple of R, G, and B values')
+            raise TypeError("Drill color must be a tuple of R, G, and B values")
         for c in color:
             if c < 0 or c > 1:
-                raise ValueError('Channel values must be between 0.0 and 1.0')
+                raise ValueError("Channel values must be between 0.0 and 1.0")
         self._drill_color = color
 
     @property
@@ -111,10 +107,10 @@ class GerberContext(object):
     @background_color.setter
     def background_color(self, color):
         if len(color) != 3:
-            raise TypeError('Background color must be a tuple of R, G, and B values')
+            raise TypeError("Background color must be a tuple of R, G, and B values")
         for c in color:
             if c < 0 or c > 1:
-                raise ValueError('Channel values must be between 0.0 and 1.0')
+                raise ValueError("Channel values must be between 0.0 and 1.0")
         self._background_color = color
 
     @property
@@ -124,7 +120,7 @@ class GerberContext(object):
     @alpha.setter
     def alpha(self, alpha):
         if alpha < 0 or alpha > 1:
-            raise ValueError('Alpha must be between 0.0 and 1.0')
+            raise ValueError("Alpha must be between 0.0 and 1.0")
         self._alpha = alpha
 
     @property
@@ -202,7 +198,6 @@ class GerberContext(object):
         """
         return
 
-
     def _render_line(self, primitive, color):
         pass
 
@@ -238,8 +233,7 @@ class GerberContext(object):
 
 
 class RenderSettings(object):
-    def __init__(self, color=(0.0, 0.0, 0.0), alpha=1.0, invert=False,
-                 mirror=False):
+    def __init__(self, color=(0.0, 0.0, 0.0), alpha=1.0, invert=False, mirror=False):
         self.color = color
         self.alpha = alpha
         self.invert = invert

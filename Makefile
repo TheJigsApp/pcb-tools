@@ -23,7 +23,7 @@ test:
 test-coverage:
 	rm -f .coverage
 	rm -f coverage.xml
-	$(PYTEST) --cov=./ --cov-report=xml 
+	$(PYTEST) --cov=./ --cov-report=xml
 
 .PHONY: install
 install:
@@ -42,4 +42,3 @@ doc-clean:
 examples:
 	PYTHONPATH=. $(PYTHON) examples/cairo_example.py
 	PYTHONPATH=. $(PYTHON) examples/pcb_example.py
-

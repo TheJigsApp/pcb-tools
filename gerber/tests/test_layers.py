@@ -27,8 +27,7 @@ COPPER_FILE = os.path.join(os.path.dirname(__file__), "resources/top_copper.GTL"
 
 
 def test_guess_layer_class():
-    """ Test layer type inferred correctly from filename
-    """
+    """Test layer type inferred correctly from filename"""
 
     # Add any specific test cases here (filename, layer_class)
     test_vectors = [
@@ -50,8 +49,7 @@ def test_guess_layer_class():
 
 
 def test_guess_layer_class_regex():
-    """ Test regular expressions for layer matching
-    """
+    """Test regular expressions for layer matching"""
 
     # Add any specific test case (filename, layer_class)
     test_vectors = [("test - top copper.gbr", "top"), ("test - copper top.gbr", "top")]
@@ -73,8 +71,7 @@ def test_guess_layer_class_regex():
 
 
 def test_guess_layer_class_by_content():
-    """ Test layer class by checking content
-    """
+    """Test layer class by checking content"""
 
     expected_layer_class = "bottom"
     filename = os.path.join(
@@ -96,8 +93,7 @@ def test_guess_layer_class_by_content():
 
 
 def test_sort_layers():
-    """ Test layer ordering
-    """
+    """Test layer ordering"""
     layers = [
         PCBLayer(layer_class="drawing"),
         PCBLayer(layer_class="drill"),

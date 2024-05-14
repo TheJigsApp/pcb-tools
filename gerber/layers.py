@@ -24,91 +24,218 @@ from .excellon import ExcellonFile
 from .ipc356 import IPCNetlist
 
 
-Hint = namedtuple('Hint', 'layer ext name regex content')
+Hint = namedtuple("Hint", "layer ext name regex content")
 
 hints = [
-    Hint(layer='top',
-         ext=['gtl', 'cmp', 'top', ],
-         name=['art01', 'top', 'GTL', 'layer1', 'soldcom', 'comp', 'F.Cu', ],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='bottom',
-         ext=['gbl', 'sld', 'bot', 'sol', 'bottom', ],
-         name=['art02', 'bottom', 'bot', 'GBL', 'layer2', 'soldsold', 'B.Cu', ],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='internal',
-         ext=['in', 'gt1', 'gt2', 'gt3', 'gt4', 'gt5', 'gt6',
-              'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 
-              'g7', 'g8', 'g9', 'g10', 'g11', 'g12', 
-              'g13', 'g14', 'gp1', 'gp2', 'gp3', 'gp4',],
-         name=['art', 'internal', 'pgp', 'pwr', 'gnd', 'ground',
-               'gp1', 'gp2', 'gp3', 'gp4', 'gt5', 'gp6',
-               'In1.Cu', 'In2.Cu', 'In3.Cu', 'In4.Cu',
-               'group3', 'group4', 'group5', 'group6', 'group7', 'group8',
-               'copper_top_l1', 'copper_inner_l2', 'copper_inner_l3', 'copper_bottom_l4', ],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='topsilk',
-         ext=['gto', 'sst', 'plc', 'ts', 'skt', 'topsilk'],
-         name=['sst01', 'topsilk', 'silk', 'slk', 'sst', 'F.SilkS', 'silkscreen_top'],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='bottomsilk',
-         ext=['gbo', 'ssb', 'pls', 'bs', 'skb', 'bottomsilk'],
-         name=['bsilk', 'ssb', 'botsilk', 'bottomsilk', 'B.SilkS', 'silkscreen_bottom'],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='topmask',
-         ext=['gts', 'stc', 'tmk', 'smt', 'tr', 'topmask', ],
-         name=['sm01', 'cmask', 'tmask', 'mask1', 'maskcom', 'topmask',
-               'mst', 'F.Mask', 'soldermask_top'],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='bottommask',
-         ext=['gbs', 'sts', 'bmk', 'smb', 'br', 'bottommask', ],
-         name=['sm', 'bmask', 'mask2', 'masksold', 'botmask', 'bottommask',
-               'msb', 'B.Mask', 'soldermask_bottom'],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='toppaste',
-         ext=['gtp', 'tm', 'toppaste', ],
-         name=['sp01', 'toppaste', 'pst', 'F.Paste', 'solderpaste_top'],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='bottompaste',
-         ext=['gbp', 'bm', 'bottompaste', ],
-         name=['sp02', 'botpaste', 'bottompaste', 'psb', 'B.Paste', 'solderpaste_bottom'],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='outline',
-         ext=['gko', 'outline', ],
-         name=['BDR', 'border', 'out', 'outline', 'Edge.Cuts', 'profile'],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='ipc_netlist',
-         ext=['ipc'],
-         name=[],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='drawing',
-         ext=['fab'],
-         name=['assembly drawing', 'assembly', 'fabrication',
-               'fab drawing', 'fab'],
-         regex='',
-         content=[]
-         ),
+    Hint(
+        layer="top",
+        ext=[
+            "gtl",
+            "cmp",
+            "top",
+        ],
+        name=[
+            "art01",
+            "top",
+            "GTL",
+            "layer1",
+            "soldcom",
+            "comp",
+            "F.Cu",
+        ],
+        regex="",
+        content=[],
+    ),
+    Hint(
+        layer="bottom",
+        ext=[
+            "gbl",
+            "sld",
+            "bot",
+            "sol",
+            "bottom",
+        ],
+        name=[
+            "art02",
+            "bottom",
+            "bot",
+            "GBL",
+            "layer2",
+            "soldsold",
+            "B.Cu",
+        ],
+        regex="",
+        content=[],
+    ),
+    Hint(
+        layer="internal",
+        ext=[
+            "in",
+            "gt1",
+            "gt2",
+            "gt3",
+            "gt4",
+            "gt5",
+            "gt6",
+            "g1",
+            "g2",
+            "g3",
+            "g4",
+            "g5",
+            "g6",
+            "g7",
+            "g8",
+            "g9",
+            "g10",
+            "g11",
+            "g12",
+            "g13",
+            "g14",
+            "gp1",
+            "gp2",
+            "gp3",
+            "gp4",
+        ],
+        name=[
+            "art",
+            "internal",
+            "pgp",
+            "pwr",
+            "gnd",
+            "ground",
+            "gp1",
+            "gp2",
+            "gp3",
+            "gp4",
+            "gt5",
+            "gp6",
+            "In1.Cu",
+            "In2.Cu",
+            "In3.Cu",
+            "In4.Cu",
+            "group3",
+            "group4",
+            "group5",
+            "group6",
+            "group7",
+            "group8",
+            "copper_top_l1",
+            "copper_inner_l2",
+            "copper_inner_l3",
+            "copper_bottom_l4",
+        ],
+        regex="",
+        content=[],
+    ),
+    Hint(
+        layer="topsilk",
+        ext=["gto", "sst", "plc", "ts", "skt", "topsilk"],
+        name=["sst01", "topsilk", "silk", "slk", "sst", "F.SilkS", "silkscreen_top"],
+        regex="",
+        content=[],
+    ),
+    Hint(
+        layer="bottomsilk",
+        ext=["gbo", "ssb", "pls", "bs", "skb", "bottomsilk"],
+        name=["bsilk", "ssb", "botsilk", "bottomsilk", "B.SilkS", "silkscreen_bottom"],
+        regex="",
+        content=[],
+    ),
+    Hint(
+        layer="topmask",
+        ext=[
+            "gts",
+            "stc",
+            "tmk",
+            "smt",
+            "tr",
+            "topmask",
+        ],
+        name=[
+            "sm01",
+            "cmask",
+            "tmask",
+            "mask1",
+            "maskcom",
+            "topmask",
+            "mst",
+            "F.Mask",
+            "soldermask_top",
+        ],
+        regex="",
+        content=[],
+    ),
+    Hint(
+        layer="bottommask",
+        ext=[
+            "gbs",
+            "sts",
+            "bmk",
+            "smb",
+            "br",
+            "bottommask",
+        ],
+        name=[
+            "sm",
+            "bmask",
+            "mask2",
+            "masksold",
+            "botmask",
+            "bottommask",
+            "msb",
+            "B.Mask",
+            "soldermask_bottom",
+        ],
+        regex="",
+        content=[],
+    ),
+    Hint(
+        layer="toppaste",
+        ext=[
+            "gtp",
+            "tm",
+            "toppaste",
+        ],
+        name=["sp01", "toppaste", "pst", "F.Paste", "solderpaste_top"],
+        regex="",
+        content=[],
+    ),
+    Hint(
+        layer="bottompaste",
+        ext=[
+            "gbp",
+            "bm",
+            "bottompaste",
+        ],
+        name=[
+            "sp02",
+            "botpaste",
+            "bottompaste",
+            "psb",
+            "B.Paste",
+            "solderpaste_bottom",
+        ],
+        regex="",
+        content=[],
+    ),
+    Hint(
+        layer="outline",
+        ext=[
+            "gko",
+            "outline",
+        ],
+        name=["BDR", "border", "out", "outline", "Edge.Cuts", "profile"],
+        regex="",
+        content=[],
+    ),
+    Hint(layer="ipc_netlist", ext=["ipc"], name=[], regex="", content=[]),
+    Hint(
+        layer="drawing",
+        ext=["fab"],
+        name=["assembly drawing", "assembly", "fabrication", "fab drawing", "fab"],
+        regex="",
+        content=[],
+    ),
 ]
 
 
@@ -143,21 +270,23 @@ def guess_layer_class(filename):
                 if re.findall(hint.regex, filename, re.IGNORECASE):
                     return hint.layer
 
-            patterns = [r'^(\w*[.-])*{}([.-]\w*)?$'.format(x) for x in hint.name]
-            if ext[1:] in hint.ext or any(re.findall(p, name, re.IGNORECASE) for p in patterns):
+            patterns = [r"^(\w*[.-])*{}([.-]\w*)?$".format(x) for x in hint.name]
+            if ext[1:] in hint.ext or any(
+                re.findall(p, name, re.IGNORECASE) for p in patterns
+            ):
                 return hint.layer
     except:
         pass
-    return 'unknown'
+    return "unknown"
 
 
 def guess_layer_class_by_content(filename):
     try:
-        file = open(filename, 'r')
+        file = open(filename, "r")
         for line in file:
             for hint in hints:
                 if len(hint.content) > 0:
-                    patterns = [r'^(.*){}(.*)$'.format(x) for x in hint.content]
+                    patterns = [r"^(.*){}(.*)$".format(x) for x in hint.content]
                     if any(re.findall(p, line, re.IGNORECASE) for p in patterns):
                         return hint.layer
     except:
@@ -167,20 +296,30 @@ def guess_layer_class_by_content(filename):
 
 
 def sort_layers(layers, from_top=True):
-    layer_order = ['outline', 'toppaste', 'topsilk', 'topmask', 'top',
-                   'internal', 'bottom', 'bottommask', 'bottomsilk',
-                   'bottompaste']
-    append_after = ['drill', 'drawing']
+    layer_order = [
+        "outline",
+        "toppaste",
+        "topsilk",
+        "topmask",
+        "top",
+        "internal",
+        "bottom",
+        "bottommask",
+        "bottomsilk",
+        "bottompaste",
+    ]
+    append_after = ["drill", "drawing"]
 
     output = []
-    drill_layers = [layer for layer in layers if layer.layer_class == 'drill']
-    internal_layers = list(sorted([layer for layer in layers
-                                   if layer.layer_class == 'internal']))
+    drill_layers = [layer for layer in layers if layer.layer_class == "drill"]
+    internal_layers = list(
+        sorted([layer for layer in layers if layer.layer_class == "internal"])
+    )
 
     for layer_class in layer_order:
-        if layer_class == 'internal':
+        if layer_class == "internal":
             output += internal_layers
-        elif layer_class == 'drill':
+        elif layer_class == "drill":
             output += drill_layers
         else:
             for layer in layers:
@@ -197,7 +336,7 @@ def sort_layers(layers, from_top=True):
 
 
 class PCBLayer(object):
-    """ Base class for PCB Layers
+    """Base class for PCB Layers
 
     Parameters
     ----------
@@ -211,16 +350,17 @@ class PCBLayer(object):
         Source Filename
 
     """
+
     @classmethod
     def from_cam(cls, camfile):
         filename = camfile.filename
         layer_class = guess_layer_class(filename)
-        if isinstance(camfile, ExcellonFile) or (layer_class == 'drill'):
+        if isinstance(camfile, ExcellonFile) or (layer_class == "drill"):
             return DrillLayer.from_cam(camfile)
-        elif layer_class == 'internal':
+        elif layer_class == "internal":
             return InternalLayer.from_cam(camfile)
         if isinstance(camfile, IPCNetlist):
-            layer_class = 'ipc_netlist'
+            layer_class = "ipc_netlist"
         return cls(filename, layer_class, camfile)
 
     def __init__(self, filename=None, layer_class=None, cam_source=None, **kwargs):
@@ -239,7 +379,7 @@ class PCBLayer(object):
             return None
 
     def __repr__(self):
-        return '<PCBLayer: {}>'.format(self.layer_class)
+        return "<PCBLayer: {}>".format(self.layer_class)
 
 
 class DrillLayer(PCBLayer):
@@ -248,51 +388,50 @@ class DrillLayer(PCBLayer):
         return cls(camfile.filename, camfile)
 
     def __init__(self, filename=None, cam_source=None, layers=None, **kwargs):
-        super(DrillLayer, self).__init__(filename, 'drill', cam_source, **kwargs)
-        self.layers = layers if layers is not None else ['top', 'bottom']
+        super(DrillLayer, self).__init__(filename, "drill", cam_source, **kwargs)
+        self.layers = layers if layers is not None else ["top", "bottom"]
 
 
 class InternalLayer(PCBLayer):
-
     @classmethod
     def from_cam(cls, camfile):
         filename = camfile.filename
         try:
-            order = int(re.search(r'\d+', filename).group())
+            order = int(re.search(r"\d+", filename).group())
         except AttributeError:
             order = 0
         return cls(filename, camfile, order)
 
     def __init__(self, filename=None, cam_source=None, order=0, **kwargs):
-        super(InternalLayer, self).__init__(filename, 'internal', cam_source, **kwargs)
+        super(InternalLayer, self).__init__(filename, "internal", cam_source, **kwargs)
         self.order = order
 
     def __eq__(self, other):
-        if not hasattr(other, 'order'):
+        if not hasattr(other, "order"):
             raise TypeError()
-        return (self.order == other.order)
+        return self.order == other.order
 
     def __ne__(self, other):
-        if not hasattr(other, 'order'):
+        if not hasattr(other, "order"):
             raise TypeError()
-        return (self.order != other.order)
+        return self.order != other.order
 
     def __gt__(self, other):
-        if not hasattr(other, 'order'):
+        if not hasattr(other, "order"):
             raise TypeError()
-        return (self.order > other.order)
+        return self.order > other.order
 
     def __lt__(self, other):
-        if not hasattr(other, 'order'):
+        if not hasattr(other, "order"):
             raise TypeError()
-        return (self.order < other.order)
+        return self.order < other.order
 
     def __ge__(self, other):
-        if not hasattr(other, 'order'):
+        if not hasattr(other, "order"):
             raise TypeError()
-        return (self.order >= other.order)
+        return self.order >= other.order
 
     def __le__(self, other):
-        if not hasattr(other, 'order'):
+        if not hasattr(other, "order"):
             raise TypeError()
-        return (self.order <= other.order)
+        return self.order <= other.order

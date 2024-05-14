@@ -24,7 +24,6 @@ from .utils import listdir
 
 
 class PCB(object):
-
     @classmethod
     def from_directory(cls, directory, board_name=None, verbose=False):
         layers = []
@@ -33,7 +32,7 @@ class PCB(object):
         # Validate
         directory = os.path.abspath(directory)
         if not os.path.isdir(directory):
-            raise TypeError('{} is not a directory.'.format(directory))
+            raise TypeError("{} is not a directory.".format(directory))
 
         # Load gerber files
         for filename in listdir(directory, True, True):
@@ -46,18 +45,19 @@ class PCB(object):
                     _name, ext = os.path.splitext(name)
                     if ext[1:] in layer_signatures(layer.layer_class):
                         name = _name
-                    if layer.layer_class == 'drill' and 'drill' in ext:
+                    if layer.layer_class == "drill" and "drill" in ext:
                         name = _name
                 names.add(name)
                 if verbose:
-                    print('[PCB]: Added {} layer <{}>'.format(layer.layer_class,
-                                                              filename))
+                    print(
+                        "[PCB]: Added {} layer <{}>".format(layer.layer_class, filename)
+                    )
             except ParseError:
                 if verbose:
-                    print('[PCB]: Skipping file {}'.format(filename))
+                    print("[PCB]: Skipping file {}".format(filename))
             except IOError:
                 if verbose:
-                    print('[PCB]: Skipping file {}'.format(filename))
+                    print("[PCB]: Skipping file {}".format(filename))
 
         # Try to guess board name
         if board_name is None:
@@ -77,48 +77,60 @@ class PCB(object):
 
     @property
     def top_layers(self):
-        board_layers = [l for l in reversed(self.layers) if l.layer_class in
-                        ('topsilk', 'topmask', 'top')]
-        drill_layers = [l for l in self.drill_layers if 'top' in l.layers]
+        board_layers = [
+            l
+            for l in reversed(self.layers)
+            if l.layer_class in ("topsilk", "topmask", "top")
+        ]
+        drill_layers = [l for l in self.drill_layers if "top" in l.layers]
         # Drill layer goes under soldermask for proper rendering of tented vias
         return [board_layers[0]] + drill_layers + board_layers[1:]
 
     @property
     def bottom_layers(self):
-        board_layers = [l for l in self.layers if l.layer_class in
-                        ('bottomsilk', 'bottommask', 'bottom')]
-        drill_layers = [l for l in self.drill_layers if 'bottom' in l.layers]
+        board_layers = [
+            l
+            for l in self.layers
+            if l.layer_class in ("bottomsilk", "bottommask", "bottom")
+        ]
+        drill_layers = [l for l in self.drill_layers if "bottom" in l.layers]
         # Drill layer goes under soldermask for proper rendering of tented vias
         return [board_layers[0]] + drill_layers + board_layers[1:]
 
     @property
     def drill_layers(self):
-        return [l for l in self.layers if l.layer_class == 'drill']
+        return [l for l in self.layers if l.layer_class == "drill"]
 
     @property
     def copper_layers(self):
-        return list(reversed([layer for layer in self.layers if
-                              layer.layer_class in
-                              ('top', 'bottom', 'internal')]))
+        return list(
+            reversed(
+                [
+                    layer
+                    for layer in self.layers
+                    if layer.layer_class in ("top", "bottom", "internal")
+                ]
+            )
+        )
 
     @property
     def outline_layer(self):
         for layer in self.layers:
-            if layer.layer_class == 'outline':
+            if layer.layer_class == "outline":
                 return layer
 
     @property
     def layer_count(self):
-        """ Number of *COPPER* layers
-        """
-        return len([l for l in self.layers if l.layer_class in
-                    ('top', 'bottom', 'internal')])
+        """Number of *COPPER* layers"""
+        return len(
+            [l for l in self.layers if l.layer_class in ("top", "bottom", "internal")]
+        )
 
     @property
     def board_bounds(self):
         for layer in self.layers:
-            if layer.layer_class == 'outline':
+            if layer.layer_class == "outline":
                 return layer.bounds
         for layer in self.layers:
-            if layer.layer_class == 'top':
+            if layer.layer_class == "top":
                 return layer.bounds

@@ -10,7 +10,7 @@ Contents:
 
 .. toctree::
     :maxdepth: 1
-    
+
     about
     features
     documentation/index
@@ -21,4 +21,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

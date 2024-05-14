@@ -15,8 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" This module provides an RS-274-X class and parser.
-"""
+"""This module provides an RS-274-X class and parser."""
 
 import copy
 import json
@@ -26,8 +25,8 @@ import sys
 
 try:
     from cStringIO import StringIO
-except(ImportError):
-    from io import StringIO
+except ImportError:
+    pass
 
 from .gerber_statements import *
 from .primitives import *
@@ -36,7 +35,7 @@ from .utils import sq_distance
 
 
 def read(filename):
-    """ Read data from filename and return a GerberFile
+    """Read data from filename and return a GerberFile
 
     Parameters
     ----------
@@ -52,7 +51,7 @@ def read(filename):
 
 
 def loads(data, filename=None):
-    """ Generate a GerberFile object from rs274x data in memory
+    """Generate a GerberFile object from rs274x data in memory
 
     Parameters
     ----------
@@ -71,7 +70,7 @@ def loads(data, filename=None):
 
 
 class GerberFile(CamFile):
-    """ A class representing a single gerber file
+    """A class representing a single gerber file
 
     The GerberFile class represents a single gerber file.
 
@@ -107,8 +106,11 @@ class GerberFile(CamFile):
 
     @property
     def comments(self):
-        return [comment.comment for comment in self.statements
-                if isinstance(comment, CommentStmt)]
+        return [
+            comment.comment
+            for comment in self.statements
+            if isinstance(comment, CommentStmt)
+        ]
 
     @property
     def size(self):
@@ -147,30 +149,29 @@ class GerberFile(CamFile):
         return ((min_x, max_x), (min_y, max_y))
 
     def write(self, filename, settings=None):
-        """ Write data out to a gerber file.
-        """
-        with open(filename, 'w') as f:
+        """Write data out to a gerber file."""
+        with open(filename, "w") as f:
             for statement in self.statements:
                 f.write(statement.to_gerber(settings or self.settings))
                 f.write("\n")
 
     def to_inch(self):
-        if self.units != 'inch':
-            self.units = 'inch'
+        if self.units != "inch":
+            self.units = "inch"
             for statement in self.statements:
                 statement.to_inch()
             for primitive in self.primitives:
                 primitive.to_inch()
 
     def to_metric(self):
-        if self.units != 'metric':
-            self.units = 'metric'
+        if self.units != "metric":
+            self.units = "metric"
             for statement in self.statements:
                 statement.to_metric()
             for primitive in self.primitives:
                 primitive.to_metric()
 
-    def offset(self, x_offset=0,  y_offset=0):
+    def offset(self, x_offset=0, y_offset=0):
         for statement in self.statements:
             statement.offset(x_offset, y_offset)
         for primitive in self.primitives:
@@ -178,8 +179,8 @@ class GerberFile(CamFile):
 
 
 class GerberParser(object):
-    """ GerberParser
-    """
+    """GerberParser"""
+
     NUMBER = r"[\+-]?\d+"
     DECIMAL = r"[\+-]?\d+([.]?\d+)?"
     STRING = r"[a-zA-Z0-9_+\-/!?<>”’(){}.\|&@# :]+"
@@ -192,11 +193,14 @@ class GerberParser(object):
     AD_RECT = r"(?P<param>AD)D(?P<d>\d+)(?P<shape>R)[,](?P<modifiers>[^,%]*)"
     AD_OBROUND = r"(?P<param>AD)D(?P<d>\d+)(?P<shape>O)[,](?P<modifiers>[^,%]*)"
     AD_POLY = r"(?P<param>AD)D(?P<d>\d+)(?P<shape>P)[,](?P<modifiers>[^,%]*)"
-    AD_MACRO = r"(?P<param>AD)D(?P<d>\d+)(?P<shape>{name})[,]?(?P<modifiers>[^,%]*)".format(name=NAME)
+    AD_MACRO = (
+        r"(?P<param>AD)D(?P<d>\d+)(?P<shape>{name})[,]?(?P<modifiers>[^,%]*)".format(
+            name=NAME
+        )
+    )
     AM = r"(?P<param>AM)(?P<name>{name})\*(?P<macro>[^%]*)".format(name=NAME)
     # Include File
     IF = r"(?P<param>IF)(?P<filename>.*)"
-
 
     # begin deprecated
     AS = r"(?P<param>AS)(?P<mode>(AXBY)|(AYBX))"
@@ -204,26 +208,51 @@ class GerberParser(object):
     IP = r"(?P<param>IP)(?P<ip>(POS|NEG))"
     IR = r"(?P<param>IR)(?P<angle>{number})".format(number=NUMBER)
     MI = r"(?P<param>MI)(A(?P<a>0|1))?(B(?P<b>0|1))?"
-    OF = r"(?P<param>OF)(A(?P<a>{decimal}))?(B(?P<b>{decimal}))?".format(decimal=DECIMAL)
+    OF = r"(?P<param>OF)(A(?P<a>{decimal}))?(B(?P<b>{decimal}))?".format(
+        decimal=DECIMAL
+    )
     SF = r"(?P<param>SF)(?P<discarded>.*)"
     LN = r"(?P<param>LN)(?P<name>.*)"
-    DEPRECATED_UNIT = re.compile(r'(?P<mode>G7[01])\*')
-    DEPRECATED_FORMAT = re.compile(r'(?P<format>G9[01])\*')
+    DEPRECATED_UNIT = re.compile(r"(?P<mode>G7[01])\*")
+    DEPRECATED_FORMAT = re.compile(r"(?P<format>G9[01])\*")
     # end deprecated
 
-    PARAMS = (FS, MO, LP, AD_CIRCLE, AD_RECT, AD_OBROUND, AD_POLY,
-              AD_MACRO, AM, AS, IF, IN, IP, IR, MI, OF, SF, LN)
+    PARAMS = (
+        FS,
+        MO,
+        LP,
+        AD_CIRCLE,
+        AD_RECT,
+        AD_OBROUND,
+        AD_POLY,
+        AD_MACRO,
+        AM,
+        AS,
+        IF,
+        IN,
+        IP,
+        IR,
+        MI,
+        OF,
+        SF,
+        LN,
+    )
 
     PARAM_STMT = [re.compile(r"%?{0}\*%?".format(p)) for p in PARAMS]
 
     COORD_FUNCTION = r"G0?[123]"
     COORD_OP = r"D0?[123]"
 
-    COORD_STMT = re.compile((
-        r"(?P<function>{function})?"
-        r"(X(?P<x>{number}))?(Y(?P<y>{number}))?"
-        r"(I(?P<i>{number}))?(J(?P<j>{number}))?"
-        r"(?P<op>{op})?\*".format(number=NUMBER, function=COORD_FUNCTION, op=COORD_OP)))
+    COORD_STMT = re.compile(
+        (
+            r"(?P<function>{function})?"
+            r"(X(?P<x>{number}))?(Y(?P<y>{number}))?"
+            r"(I(?P<i>{number}))?(J(?P<j>{number}))?"
+            r"(?P<op>{op})?\*".format(
+                number=NUMBER, function=COORD_FUNCTION, op=COORD_OP
+            )
+        )
+    )
 
     APERTURE_STMT = re.compile(r"(?P<deprecated>(G54)|(G55))?D(?P<d>\d+)\*")
 
@@ -231,8 +260,8 @@ class GerberParser(object):
 
     EOF_STMT = re.compile(r"(?P<eof>M[0]?[012])\*")
 
-    REGION_MODE_STMT = re.compile(r'(?P<mode>G3[67])\*')
-    QUAD_MODE_STMT = re.compile(r'(?P<mode>G7[45])\*')
+    REGION_MODE_STMT = re.compile(r"(?P<mode>G3[67])\*")
+    QUAD_MODE_STMT = re.compile(r"(?P<mode>G7[45])\*")
 
     # Keep include loop from crashing us
     INCLUDE_FILE_RECURSION_LIMIT = 10
@@ -251,18 +280,18 @@ class GerberParser(object):
         self.offset_b = 0
         self.op = "D02"
         self.aperture = 0
-        self.interpolation = 'linear'
-        self.direction = 'clockwise'
-        self.image_polarity = 'positive'
-        self.level_polarity = 'dark'
-        self.region_mode = 'off'
-        self.quadrant_mode = 'multi-quadrant'
+        self.interpolation = "linear"
+        self.direction = "clockwise"
+        self.image_polarity = "positive"
+        self.level_polarity = "dark"
+        self.region_mode = "off"
+        self.quadrant_mode = "multi-quadrant"
         self.step_and_repeat = (1, 1, 0, 0)
         self._recursion_depth = 0
 
     def parse(self, filename):
         self.filename = filename
-        with open(filename, 'r', encoding="utf-8") as fp:
+        with open(filename, "r", encoding="utf-8") as fp:
             data = fp.read()
         return self.parse_raw(data, filename)
 
@@ -276,7 +305,13 @@ class GerberParser(object):
         for stmt in self.statements:
             stmt.units = self.settings.units
 
-        return GerberFile(self.statements, self.settings, self.primitives, self.apertures.values(), filename)
+        return GerberFile(
+            self.statements,
+            self.settings,
+            self.primitives,
+            self.apertures.values(),
+            filename,
+        )
 
     def _split_commands(self, data):
         """
@@ -288,24 +323,23 @@ class GerberParser(object):
         in_header = True
 
         for cur in range(0, length):
-
             val = data[cur]
 
-            if val == '%' and start == cur:
+            if val == "%" and start == cur:
                 in_header = True
                 continue
 
-            if val == '\r' or val == '\n':
+            if val == "\r" or val == "\n":
                 if start != cur:
                     yield data[start:cur]
                 start = cur + 1
 
-            elif not in_header and val == '*':
-                yield data[start:cur + 1]
+            elif not in_header and val == "*":
+                yield data[start : cur + 1]
                 start = cur + 1
 
-            elif in_header and val == '%':
-                yield data[start:cur + 1]
+            elif in_header and val == "%":
+                yield data[start : cur + 1]
                 start = cur + 1
                 in_header = False
 
@@ -320,7 +354,7 @@ class GerberParser(object):
         return string
 
     def _parse(self, data):
-        oldline = ''
+        oldline = ""
 
         for line in data:
             line = oldline + line.strip()
@@ -330,7 +364,7 @@ class GerberParser(object):
                 continue
 
             # deal with multi-line parameters
-            if line.startswith("%") and not line.endswith("%") and not "%" in line[1:]:
+            if line.startswith("%") and not line.endswith("%") and "%" not in line[1:]:
                 oldline = line
                 continue
 
@@ -339,7 +373,7 @@ class GerberParser(object):
                 did_something = False
 
                 # consume empty data blocks
-                if line[0] == '*':
+                if line[0] == "*":
                     line = line[1:]
                     did_something = True
                     continue
@@ -388,7 +422,12 @@ class GerberParser(object):
                         # Don't crash on include loop
                         if self._recursion_depth < self.INCLUDE_FILE_RECURSION_LIMIT:
                             self._recursion_depth += 1
-                            with open(os.path.join(os.path.dirname(self.filename), param["filename"]), 'r') as f:
+                            with open(
+                                os.path.join(
+                                    os.path.dirname(self.filename), param["filename"]
+                                ),
+                                "r",
+                            ) as f:
                                 inc_data = f.read()
                             for stmt in self._parse(self._split_commands(inc_data)):
                                 yield stmt
@@ -450,8 +489,10 @@ class GerberParser(object):
                 # deprecated codes
                 (deprecated_unit, r) = _match_one(self.DEPRECATED_UNIT, line)
                 if deprecated_unit:
-                    stmt = MOParamStmt(param="MO", mo="inch" if "G70" in
-                                       deprecated_unit["mode"] else "metric")
+                    stmt = MOParamStmt(
+                        param="MO",
+                        mo="inch" if "G70" in deprecated_unit["mode"] else "metric",
+                    )
                     self.settings.units = stmt.mode
                     yield stmt
                     line = r
@@ -473,7 +514,7 @@ class GerberParser(object):
                     line = r
                     continue
 
-                if line.find('*') > 0:
+                if line.find("*") > 0:
                     yield UnknownStmt(line)
                     did_something = True
                     line = ""
@@ -482,7 +523,7 @@ class GerberParser(object):
             oldline = line
 
     def evaluate(self, stmt):
-        """ Evaluate Gerber statement and update image accordingly.
+        """Evaluate Gerber statement and update image accordingly.
 
         This method is called once for each statement in the file as it
         is parsed.
@@ -513,7 +554,7 @@ class GerberParser(object):
 
     def _define_aperture(self, d, shape, modifiers):
         aperture = None
-        if shape == 'C':
+        if shape == "C":
             diameter = modifiers[0][0]
 
             hole_diameter = 0
@@ -523,13 +564,16 @@ class GerberParser(object):
             elif len(modifiers[0]) == 3:
                 rectangular_hole = modifiers[0][1:3]
 
-            aperture = Circle(position=None, diameter=diameter,
-                              hole_diameter=hole_diameter,
-                              hole_width=rectangular_hole[0],
-                              hole_height=rectangular_hole[1],
-                              units=self.settings.units)
+            aperture = Circle(
+                position=None,
+                diameter=diameter,
+                hole_diameter=hole_diameter,
+                hole_width=rectangular_hole[0],
+                hole_height=rectangular_hole[1],
+                units=self.settings.units,
+            )
 
-        elif shape == 'R':
+        elif shape == "R":
             width = modifiers[0][0]
             height = modifiers[0][1]
 
@@ -540,12 +584,16 @@ class GerberParser(object):
             elif len(modifiers[0]) == 4:
                 rectangular_hole = modifiers[0][2:4]
 
-            aperture = Rectangle(position=None, width=width, height=height,
-                                 hole_diameter=hole_diameter,
-                                 hole_width=rectangular_hole[0],
-                                 hole_height=rectangular_hole[1],
-                                 units=self.settings.units)
-        elif shape == 'O':
+            aperture = Rectangle(
+                position=None,
+                width=width,
+                height=height,
+                hole_diameter=hole_diameter,
+                hole_width=rectangular_hole[0],
+                hole_height=rectangular_hole[1],
+                units=self.settings.units,
+            )
+        elif shape == "O":
             width = modifiers[0][0]
             height = modifiers[0][1]
 
@@ -556,12 +604,16 @@ class GerberParser(object):
             elif len(modifiers[0]) == 4:
                 rectangular_hole = modifiers[0][2:4]
 
-            aperture = Obround(position=None, width=width, height=height,
-                               hole_diameter=hole_diameter,
-                               hole_width=rectangular_hole[0],
-                               hole_height=rectangular_hole[1],
-                               units=self.settings.units)
-        elif shape == 'P':
+            aperture = Obround(
+                position=None,
+                width=width,
+                height=height,
+                hole_diameter=hole_diameter,
+                hole_width=rectangular_hole[0],
+                hole_height=rectangular_hole[1],
+                units=self.settings.units,
+            )
+        elif shape == "P":
             outer_diameter = modifiers[0][0]
             number_vertices = int(modifiers[0][1])
             if len(modifiers[0]) > 2:
@@ -576,12 +628,15 @@ class GerberParser(object):
             elif len(modifiers[0]) >= 5:
                 rectangular_hole = modifiers[0][3:5]
 
-            aperture = Polygon(position=None, sides=number_vertices,
-                               radius=outer_diameter/2.0,
-                               hole_diameter=hole_diameter,
-                               hole_width=rectangular_hole[0],
-                               hole_height=rectangular_hole[1],
-                               rotation=rotation)
+            aperture = Polygon(
+                position=None,
+                sides=number_vertices,
+                radius=outer_diameter / 2.0,
+                hole_diameter=hole_diameter,
+                hole_width=rectangular_hole[0],
+                hole_height=rectangular_hole[1],
+                rotation=rotation,
+            )
         else:
             aperture = self.macros[shape].build(modifiers)
 
@@ -589,16 +644,21 @@ class GerberParser(object):
         self.apertures[d] = aperture
 
     def _evaluate_mode(self, stmt):
-        if stmt.type == 'RegionMode':
-            if self.region_mode == 'on' and stmt.mode == 'off':
+        if stmt.type == "RegionMode":
+            if self.region_mode == "on" and stmt.mode == "off":
                 # Sometimes we have regions that have no points. Skip those
                 if self.current_region:
-                    self.primitives.append(Region(self.current_region,
-                                                  level_polarity=self.level_polarity, units=self.settings.units))
+                    self.primitives.append(
+                        Region(
+                            self.current_region,
+                            level_polarity=self.level_polarity,
+                            units=self.settings.units,
+                        )
+                    )
 
                 self.current_region = None
             self.region_mode = stmt.mode
-        elif stmt.type == 'QuadrantMode':
+        elif stmt.type == "QuadrantMode":
             self.quadrant_mode = stmt.mode
 
     def _evaluate_param(self, stmt):
@@ -627,11 +687,12 @@ class GerberParser(object):
         y = (self.y if stmt.y is None else stmt.y) + self.offset_b
 
         if stmt.function in ("G01", "G1"):
-            self.interpolation = 'linear'
-        elif stmt.function in ('G02', 'G2', 'G03', 'G3'):
-            self.interpolation = 'arc'
-            self.direction = ('clockwise' if stmt.function in
-                              ('G02', 'G2') else 'counterclockwise')
+            self.interpolation = "linear"
+        elif stmt.function in ("G02", "G2", "G03", "G3"):
+            self.interpolation = "arc"
+            self.direction = (
+                "clockwise" if stmt.function in ("G02", "G2") else "counterclockwise"
+            )
 
         if stmt.only_function:
             # Sometimes we get a coordinate statement
@@ -649,12 +710,17 @@ class GerberParser(object):
             start = (self.x, self.y)
             end = (x, y)
 
-            if self.interpolation == 'linear':
-                if self.region_mode == 'off':
-                    self.primitives.append(Line(start, end,
-                                                self.apertures[self.aperture],
-                                                level_polarity=self.level_polarity,
-                                                units=self.settings.units))
+            if self.interpolation == "linear":
+                if self.region_mode == "off":
+                    self.primitives.append(
+                        Line(
+                            start,
+                            end,
+                            self.apertures[self.aperture],
+                            level_polarity=self.level_polarity,
+                            units=self.settings.units,
+                        )
+                    )
                 else:
                     # from gerber spec revision J3, Section 4.5, page 55:
                     #  The segments are not graphics objects in themselves; segments are part of region which is the graphics object. The segments have no thickness.
@@ -663,59 +729,90 @@ class GerberParser(object):
                     # be applied to the region.
 
                     if self.current_region is None:
-                        self.current_region = [Line(start, end,
-                                                    self.apertures.get(self.aperture,
-                                                                       Circle((0, 0), 0)),
-                                                    level_polarity=self.level_polarity,
-                                                    units=self.settings.units), ]
+                        self.current_region = [
+                            Line(
+                                start,
+                                end,
+                                self.apertures.get(self.aperture, Circle((0, 0), 0)),
+                                level_polarity=self.level_polarity,
+                                units=self.settings.units,
+                            ),
+                        ]
                     else:
-                        self.current_region.append(Line(start, end,
-                                                        self.apertures.get(self.aperture,
-                                                                           Circle((0, 0), 0)),
-                                                        level_polarity=self.level_polarity,
-                                                        units=self.settings.units))
+                        self.current_region.append(
+                            Line(
+                                start,
+                                end,
+                                self.apertures.get(self.aperture, Circle((0, 0), 0)),
+                                level_polarity=self.level_polarity,
+                                units=self.settings.units,
+                            )
+                        )
             else:
                 i = 0 if stmt.i is None else stmt.i
                 j = 0 if stmt.j is None else stmt.j
                 center = self._find_center(start, end, (i, j))
-                if self.region_mode == 'off':
-                    self.primitives.append(Arc(start, end, center, self.direction,
-                                               self.apertures[self.aperture],
-                                               quadrant_mode=self.quadrant_mode,
-                                               level_polarity=self.level_polarity,
-                                               units=self.settings.units))
+                if self.region_mode == "off":
+                    self.primitives.append(
+                        Arc(
+                            start,
+                            end,
+                            center,
+                            self.direction,
+                            self.apertures[self.aperture],
+                            quadrant_mode=self.quadrant_mode,
+                            level_polarity=self.level_polarity,
+                            units=self.settings.units,
+                        )
+                    )
                 else:
                     if self.current_region is None:
-                        self.current_region = [Arc(start, end, center, self.direction,
-                                                   self.apertures.get(self.aperture, Circle((0,0), 0)),
-                                                   quadrant_mode=self.quadrant_mode,
-                                                   level_polarity=self.level_polarity,
-                                                   units=self.settings.units),]
+                        self.current_region = [
+                            Arc(
+                                start,
+                                end,
+                                center,
+                                self.direction,
+                                self.apertures.get(self.aperture, Circle((0, 0), 0)),
+                                quadrant_mode=self.quadrant_mode,
+                                level_polarity=self.level_polarity,
+                                units=self.settings.units,
+                            ),
+                        ]
                     else:
-                        self.current_region.append(Arc(start, end, center, self.direction,
-                                                       self.apertures.get(self.aperture, Circle((0,0), 0)),
-                                                       quadrant_mode=self.quadrant_mode,
-                                                       level_polarity=self.level_polarity,
-                                                       units=self.settings.units))
+                        self.current_region.append(
+                            Arc(
+                                start,
+                                end,
+                                center,
+                                self.direction,
+                                self.apertures.get(self.aperture, Circle((0, 0), 0)),
+                                quadrant_mode=self.quadrant_mode,
+                                level_polarity=self.level_polarity,
+                                units=self.settings.units,
+                            )
+                        )
                     # Gerbv seems to reset interpolation mode in regions..
                     # TODO: Make sure this is right.
-                    self.interpolation = 'linear'
+                    self.interpolation = "linear"
 
         elif self.op == "D02" or self.op == "D2":
-
             if self.region_mode == "on":
                 # D02 in the middle of a region finishes that region and starts a new one
                 if self.current_region and len(self.current_region) > 1:
-                    self.primitives.append(Region(self.current_region,
-                                                  level_polarity=self.level_polarity,
-                                                  units=self.settings.units))
+                    self.primitives.append(
+                        Region(
+                            self.current_region,
+                            level_polarity=self.level_polarity,
+                            units=self.settings.units,
+                        )
+                    )
                 self.current_region = None
 
         elif self.op == "D03" or self.op == "D3":
             primitive = copy.deepcopy(self.apertures[self.aperture])
 
             if primitive is not None:
-
                 if not isinstance(primitive, AMParamStmt):
                     primitive.position = (x, y)
                     primitive.level_polarity = self.level_polarity
@@ -724,9 +821,9 @@ class GerberParser(object):
                 else:
                     # Aperture Macro
                     for am_prim in primitive.primitives:
-                        renderable = am_prim.to_primitive((x, y),
-                                                          self.level_polarity,
-                                                          self.settings.units)
+                        renderable = am_prim.to_primitive(
+                            (x, y), self.level_polarity, self.settings.units
+                        )
                         if renderable is not None:
                             self.primitives.append(renderable)
         self.x, self.y = x, y
@@ -739,7 +836,7 @@ class GerberParser(object):
         in the specified direction
         """
         two_pi = 2 * math.pi
-        if self.quadrant_mode == 'single-quadrant':
+        if self.quadrant_mode == "single-quadrant":
             # The Gerber spec says single quadrant only has one possible center,
             # and you can detect it based on the angle. But for real files, this
             # seems to work better - there is usually only one option that makes
@@ -750,20 +847,32 @@ class GerberParser(object):
             sqdist_diff_min = sys.maxsize
             center = None
             for factors in [(1, 1), (1, -1), (-1, 1), (-1, -1)]:
-
-                test_center = (start[0] + offsets[0] * factors[0],
-                               start[1] + offsets[1] * factors[1])
+                test_center = (
+                    start[0] + offsets[0] * factors[0],
+                    start[1] + offsets[1] * factors[1],
+                )
 
                 # Find angle from center to start and end points
-                start_angle = math.atan2(*reversed([_start - _center for _start, _center in zip(start, test_center)]))
-                end_angle = math.atan2(*reversed([_end - _center for _end, _center in zip(end, test_center)]))
+                start_angle = math.atan2(
+                    *reversed(
+                        [
+                            _start - _center
+                            for _start, _center in zip(start, test_center)
+                        ]
+                    )
+                )
+                end_angle = math.atan2(
+                    *reversed(
+                        [_end - _center for _end, _center in zip(end, test_center)]
+                    )
+                )
 
                 # Clamp angles to 0, 2pi
                 theta0 = (start_angle + two_pi) % two_pi
                 theta1 = (end_angle + two_pi) % two_pi
 
                 # Determine sweep angle in the current arc direction
-                if self.direction == 'counterclockwise':
+                if self.direction == "counterclockwise":
                     sweep_angle = abs(theta1 - theta0)
                 else:
                     theta0 += two_pi
@@ -779,7 +888,9 @@ class GerberParser(object):
                 # In some rare cases, the sweep angle is numerically (10**-14) above pi/2
                 # So it is safer to compare the angles with some tolerance
                 is_lowest_radius_error = sqdist_diff < sqdist_diff_min
-                is_valid_sweep_angle = sweep_angle >= 0 and sweep_angle <= math.pi / 2.0 + 1e-6
+                is_valid_sweep_angle = (
+                    sweep_angle >= 0 and sweep_angle <= math.pi / 2.0 + 1e-6
+                )
                 if is_lowest_radius_error and is_valid_sweep_angle:
                     center = test_center
                     sqdist_diff_min = sqdist_diff
@@ -790,18 +901,19 @@ class GerberParser(object):
     def _evaluate_aperture(self, stmt):
         self.aperture = stmt.d
 
+
 def _match_one(expr, data):
     match = expr.match(data)
     if match is None:
         return ({}, None)
     else:
-        return (match.groupdict(), data[match.end(0):])
+        return (match.groupdict(), data[match.end(0) :])
 
 
 def _match_one_from_many(exprs, data):
     for expr in exprs:
         match = expr.match(data)
         if match:
-            return (match.groupdict(), data[match.end(0):])
+            return (match.groupdict(), data[match.end(0) :])
 
     return ({}, None)

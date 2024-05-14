@@ -23,16 +23,24 @@ from .primitives import *
 from .utils import validate_coordinates, inch, metric, rotate_point
 
 
-
 # TODO: Add support for aperture macro variables
-__all__ = ['AMPrimitive', 'AMCommentPrimitive', 'AMCirclePrimitive',
-           'AMVectorLinePrimitive', 'AMOutlinePrimitive', 'AMPolygonPrimitive',
-           'AMMoirePrimitive', 'AMThermalPrimitive', 'AMCenterLinePrimitive',
-           'AMLowerLeftLinePrimitive', 'AMUnsupportPrimitive']
+__all__ = [
+    "AMPrimitive",
+    "AMCommentPrimitive",
+    "AMCirclePrimitive",
+    "AMVectorLinePrimitive",
+    "AMOutlinePrimitive",
+    "AMPolygonPrimitive",
+    "AMMoirePrimitive",
+    "AMThermalPrimitive",
+    "AMCenterLinePrimitive",
+    "AMLowerLeftLinePrimitive",
+    "AMUnsupportPrimitive",
+]
 
 
 class AMPrimitive(object):
-    """ Aperture Macro Primitive Base Class
+    """Aperture Macro Primitive Base Class
 
     Parameters
     ----------
@@ -59,38 +67,38 @@ class AMPrimitive(object):
     def __init__(self, code, exposure=None):
         VALID_CODES = (0, 1, 2, 4, 5, 6, 7, 20, 21, 22, 9999)
         if not isinstance(code, int):
-            raise TypeError('Aperture Macro Primitive code must be an integer')
+            raise TypeError("Aperture Macro Primitive code must be an integer")
         elif code not in VALID_CODES:
-            raise ValueError('Invalid Code. Valid codes are %s.' %
-                             ', '.join(map(str, VALID_CODES)))
-        if exposure is not None and exposure.lower() not in ('on', 'off'):
-            raise ValueError('Exposure must be either on or off')
+            raise ValueError(
+                "Invalid Code. Valid codes are %s." % ", ".join(map(str, VALID_CODES))
+            )
+        if exposure is not None and exposure.lower() not in ("on", "off"):
+            raise ValueError("Exposure must be either on or off")
         self.code = code
         self.exposure = exposure.lower() if exposure is not None else None
 
     def to_inch(self):
-        raise NotImplementedError('Subclass must implement `to-inch`')
+        raise NotImplementedError("Subclass must implement `to-inch`")
 
     def to_metric(self):
-        raise NotImplementedError('Subclass must implement `to-metric`')
+        raise NotImplementedError("Subclass must implement `to-metric`")
 
     @property
     def _level_polarity(self):
-        if self.exposure == 'off':
-            return 'clear'
-        return 'dark'
+        if self.exposure == "off":
+            return "clear"
+        return "dark"
 
     def to_primitive(self, units):
-        """ Return a Primitive instance based on the specified macro params.
-        """
-        print('Rendering {}s is not supported yet.'.format(str(self.__class__)))
+        """Return a Primitive instance based on the specified macro params."""
+        print("Rendering {}s is not supported yet.".format(str(self.__class__)))
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
 
 class AMCommentPrimitive(AMPrimitive):
-    """ Aperture Macro Comment primitive. Code 0
+    """Aperture Macro Comment primitive. Code 0
 
     The comment primitive has no image meaning. It is used to include human-
     readable comments into the AM command.
@@ -116,6 +124,7 @@ class AMCommentPrimitive(AMPrimitive):
     ------
     ValueError
     """
+
     @classmethod
     def from_gerber(cls, primitive):
         primitive = primitive.strip()
@@ -125,9 +134,9 @@ class AMCommentPrimitive(AMPrimitive):
 
     def __init__(self, code, comment):
         if code != 0:
-            raise ValueError('Not a valid Aperture Macro Comment statement')
+            raise ValueError("Not a valid Aperture Macro Comment statement")
         super(AMCommentPrimitive, self).__init__(code)
-        self.comment = comment.strip(' *')
+        self.comment = comment.strip(" *")
 
     def to_inch(self):
         pass
@@ -136,7 +145,7 @@ class AMCommentPrimitive(AMPrimitive):
         pass
 
     def to_gerber(self, settings=None):
-        return '0 %s *' % self.comment
+        return "0 %s *" % self.comment
 
     def to_primitive(self, units):
         """
@@ -145,11 +154,11 @@ class AMCommentPrimitive(AMPrimitive):
         return None
 
     def __str__(self):
-        return '<Aperture Macro Comment: %s>' % self.comment
+        return "<Aperture Macro Comment: %s>" % self.comment
 
 
 class AMCirclePrimitive(AMPrimitive):
-    """ Aperture macro Circle primitive. Code 1
+    """Aperture macro Circle primitive. Code 1
 
     A circle primitive is defined by its center point and diameter.
 
@@ -180,23 +189,24 @@ class AMCirclePrimitive(AMPrimitive):
     ------
     ValueError, TypeError
     """
+
     @classmethod
     def from_gerber(cls, primitive):
-        modifiers = primitive.strip(' *').split(',')
+        modifiers = primitive.strip(" *").split(",")
         code = int(modifiers[0])
-        exposure = 'on' if float(modifiers[1]) == 1 else 'off'
+        exposure = "on" if float(modifiers[1]) == 1 else "off"
         diameter = float(modifiers[2])
         position = (float(modifiers[3]), float(modifiers[4]))
         return cls(code, exposure, diameter, position)
 
     @classmethod
     def from_primitive(cls, primitive):
-        return cls(1, 'on', primitive.diameter, primitive.position)
+        return cls(1, "on", primitive.diameter, primitive.position)
 
     def __init__(self, code, exposure, diameter, position):
         validate_coordinates(position)
         if code != 1:
-            raise ValueError('CirclePrimitive code is 1')
+            raise ValueError("CirclePrimitive code is 1")
         super(AMCirclePrimitive, self).__init__(code, exposure)
         self.diameter = diameter
         self.position = position
@@ -210,19 +220,26 @@ class AMCirclePrimitive(AMPrimitive):
         self.position = tuple([metric(x) for x in self.position])
 
     def to_gerber(self, settings=None):
-        data = dict(code=self.code,
-                    exposure='1' if self.exposure == 'on' else 0,
-                    diameter=self.diameter,
-                    x=self.position[0],
-                    y=self.position[1])
-        return '{code},{exposure},{diameter},{x},{y}*'.format(**data)
+        data = dict(
+            code=self.code,
+            exposure="1" if self.exposure == "on" else 0,
+            diameter=self.diameter,
+            x=self.position[0],
+            y=self.position[1],
+        )
+        return "{code},{exposure},{diameter},{x},{y}*".format(**data)
 
     def to_primitive(self, units):
-        return Circle((self.position), self.diameter, units=units, level_polarity=self._level_polarity)
+        return Circle(
+            (self.position),
+            self.diameter,
+            units=units,
+            level_polarity=self._level_polarity,
+        )
 
 
 class AMVectorLinePrimitive(AMPrimitive):
-    """ Aperture Macro Vector Line primitive. Code 2 or 20.
+    """Aperture Macro Vector Line primitive. Code 2 or 20.
 
     A vector line is a rectangle defined by its line width, start, and end
     points. The line ends are rectangular.
@@ -263,13 +280,13 @@ class AMVectorLinePrimitive(AMPrimitive):
 
     @classmethod
     def from_primitive(cls, primitive):
-        return cls(2, 'on', primitive.aperture.width, primitive.start, primitive.end, 0)
+        return cls(2, "on", primitive.aperture.width, primitive.start, primitive.end, 0)
 
     @classmethod
     def from_gerber(cls, primitive):
-        modifiers = primitive.strip(' *').split(',')
+        modifiers = primitive.strip(" *").split(",")
         code = int(modifiers[0])
-        exposure = 'on' if float(modifiers[1]) == 1 else 'off'
+        exposure = "on" if float(modifiers[1]) == 1 else "off"
         width = float(modifiers[2])
         start = (float(modifiers[3]), float(modifiers[4]))
         end = (float(modifiers[5]), float(modifiers[6]))
@@ -280,7 +297,7 @@ class AMVectorLinePrimitive(AMPrimitive):
         validate_coordinates(start)
         validate_coordinates(end)
         if code not in (2, 20):
-            raise ValueError('VectorLinePrimitive codes are 2 or 20')
+            raise ValueError("VectorLinePrimitive codes are 2 or 20")
         super(AMVectorLinePrimitive, self).__init__(code, exposure)
         self.width = width
         self.start = start
@@ -298,15 +315,17 @@ class AMVectorLinePrimitive(AMPrimitive):
         self.end = tuple([metric(x) for x in self.end])
 
     def to_gerber(self, settings=None):
-        fmtstr = '{code},{exp},{width},{startx},{starty},{endx},{endy},{rotation}*'
-        data = dict(code=self.code,
-                    exp=1 if self.exposure == 'on' else 0,
-                    width=self.width,
-                    startx=self.start[0],
-                    starty=self.start[1],
-                    endx=self.end[0],
-                    endy=self.end[1],
-                    rotation=self.rotation)
+        fmtstr = "{code},{exp},{width},{startx},{starty},{endx},{endy},{rotation}*"
+        data = dict(
+            code=self.code,
+            exp=1 if self.exposure == "on" else 0,
+            width=self.width,
+            startx=self.start[0],
+            starty=self.start[1],
+            endx=self.end[0],
+            endy=self.end[1],
+            rotation=self.rotation,
+        )
         return fmtstr.format(**data)
 
     def to_primitive(self, units):
@@ -333,7 +352,7 @@ class AMVectorLinePrimitive(AMPrimitive):
 
 
 class AMOutlinePrimitive(AMPrimitive):
-    """ Aperture Macro Outline primitive. Code 4.
+    """Aperture Macro Outline primitive. Code 4.
 
     An outline primitive is an area enclosed by an n-point polygon defined by
     its start point and n subsequent points. The outline must be closed, i.e.
@@ -373,19 +392,21 @@ class AMOutlinePrimitive(AMPrimitive):
 
     @classmethod
     def from_primitive(cls, primitive):
-
-        start_point = (round(primitive.primitives[0].start[0], 6), round(primitive.primitives[0].start[1], 6))
+        start_point = (
+            round(primitive.primitives[0].start[0], 6),
+            round(primitive.primitives[0].start[1], 6),
+        )
         points = []
         for prim in primitive.primitives:
             points.append((round(prim.end[0], 6), round(prim.end[1], 6)))
 
         rotation = 0.0
 
-        return cls(4, 'on', start_point, points, rotation)
+        return cls(4, "on", start_point, points, rotation)
 
     @classmethod
     def from_gerber(cls, primitive):
-        modifiers = primitive.strip(' *').split(",")
+        modifiers = primitive.strip(" *").split(",")
 
         code = int(modifiers[0])
         exposure = "on" if float(modifiers[1]) == 1 else "off"
@@ -393,23 +414,23 @@ class AMOutlinePrimitive(AMPrimitive):
         start_point = (float(modifiers[3]), float(modifiers[4]))
         points = []
         for i in range(n):
-            points.append((float(modifiers[5 + i * 2]),
-                           float(modifiers[5 + i * 2 + 1])))
+            points.append(
+                (float(modifiers[5 + i * 2]), float(modifiers[5 + i * 2 + 1]))
+            )
         rotation = float(modifiers[-1])
         return cls(code, exposure, start_point, points, rotation)
 
     def __init__(self, code, exposure, start_point, points, rotation):
-        """ Initialize AMOutlinePrimitive
-        """
+        """Initialize AMOutlinePrimitive"""
         validate_coordinates(start_point)
         for point in points:
             validate_coordinates(point)
         if code != 4:
-            raise ValueError('OutlinePrimitive code is 4')
+            raise ValueError("OutlinePrimitive code is 4")
         super(AMOutlinePrimitive, self).__init__(code, exposure)
         self.start_point = start_point
         if points[-1] != start_point:
-            raise ValueError('OutlinePrimitive must be closed')
+            raise ValueError("OutlinePrimitive must be closed")
         self.points = points
         self.rotation = rotation
 
@@ -428,9 +449,11 @@ class AMOutlinePrimitive(AMPrimitive):
             n_points=len(self.points),
             start_point="%.6g,%.6g" % self.start_point,
             points=",\n".join(["%.6g,%.6g" % point for point in self.points]),
-            rotation=str(self.rotation)
+            rotation=str(self.rotation),
         )
-        return "{code},{exposure},{n_points},{start_point},{points},{rotation}*".format(**data)
+        return "{code},{exposure},{n_points},{start_point},{points},{rotation}*".format(
+            **data
+        )
 
     def to_primitive(self, units):
         """
@@ -443,18 +466,18 @@ class AMOutlinePrimitive(AMPrimitive):
         for point in self.points:
             cur_point = rotate_point(point, self.rotation)
 
-            lines.append(Line(prev_point, cur_point, Circle((0,0), 0)))
+            lines.append(Line(prev_point, cur_point, Circle((0, 0), 0)))
 
             prev_point = cur_point
 
         if lines[0].start != lines[-1].end:
-            raise ValueError('Outline must be closed')
+            raise ValueError("Outline must be closed")
 
         return Outline(lines, units=units, level_polarity=self._level_polarity)
 
 
 class AMPolygonPrimitive(AMPrimitive):
-    """ Aperture Macro Polygon primitive. Code 5.
+    """Aperture Macro Polygon primitive. Code 5.
 
     A polygon primitive is a regular polygon defined by the number of
     vertices, the center point, and the diameter of the circumscribed circle.
@@ -495,11 +518,18 @@ class AMPolygonPrimitive(AMPrimitive):
 
     @classmethod
     def from_primitive(cls, primitive):
-        return cls(5, 'on', primitive.sides, primitive.position, primitive.diameter, primitive.rotation)
+        return cls(
+            5,
+            "on",
+            primitive.sides,
+            primitive.position,
+            primitive.diameter,
+            primitive.rotation,
+        )
 
     @classmethod
     def from_gerber(cls, primitive):
-        modifiers = primitive.strip(' *').split(",")
+        modifiers = primitive.strip(" *").split(",")
         code = int(modifiers[0])
         exposure = "on" if float(modifiers[1]) == 1 else "off"
         vertices = int(float(modifiers[2]))
@@ -513,13 +543,12 @@ class AMPolygonPrimitive(AMPrimitive):
         return cls(code, exposure, vertices, position, diameter, rotation)
 
     def __init__(self, code, exposure, vertices, position, diameter, rotation):
-        """ Initialize AMPolygonPrimitive
-        """
+        """Initialize AMPolygonPrimitive"""
         if code != 5:
-            raise ValueError('PolygonPrimitive code is 5')
+            raise ValueError("PolygonPrimitive code is 5")
         super(AMPolygonPrimitive, self).__init__(code, exposure)
         if vertices < 3 or vertices > 12:
-            raise ValueError('Number of vertices must be between 3 and 12')
+            raise ValueError("Number of vertices must be between 3 and 12")
         self.vertices = vertices
         validate_coordinates(position)
         self.position = position
@@ -540,18 +569,26 @@ class AMPolygonPrimitive(AMPrimitive):
             exposure="1" if self.exposure == "on" else "0",
             vertices=self.vertices,
             position="%.4g,%.4g" % self.position,
-            diameter='%.4g' % self.diameter,
-            rotation=str(self.rotation)
+            diameter="%.4g" % self.diameter,
+            rotation=str(self.rotation),
         )
         fmt = "{code},{exposure},{vertices},{position},{diameter},{rotation}*"
         return fmt.format(**data)
 
     def to_primitive(self, units):
-        return Polygon(self.position, self.vertices, self.diameter / 2.0, 0, rotation=self.rotation, units=units, level_polarity=self._level_polarity)
+        return Polygon(
+            self.position,
+            self.vertices,
+            self.diameter / 2.0,
+            0,
+            rotation=self.rotation,
+            units=units,
+            level_polarity=self._level_polarity,
+        )
 
 
 class AMMoirePrimitive(AMPrimitive):
-    """ Aperture Macro Moire primitive. Code 6.
+    """Aperture Macro Moire primitive. Code 6.
 
     The moire primitive is a cross hair centered on concentric rings (annuli).
     Exposure is always on.
@@ -598,9 +635,10 @@ class AMMoirePrimitive(AMPrimitive):
     ------
     ValueError, TypeError
     """
+
     @classmethod
     def from_gerber(cls, primitive):
-        modifiers = primitive.strip(' *').split(",")
+        modifiers = primitive.strip(" *").split(",")
         code = int(modifiers[0])
         position = (float(modifiers[1]), float(modifiers[2]))
         diameter = float(modifiers[3])
@@ -610,14 +648,34 @@ class AMMoirePrimitive(AMPrimitive):
         crosshair_thickness = float(modifiers[7])
         crosshair_length = float(modifiers[8])
         rotation = float(modifiers[9])
-        return cls(code, position, diameter, ring_thickness, gap, max_rings, crosshair_thickness, crosshair_length, rotation)
+        return cls(
+            code,
+            position,
+            diameter,
+            ring_thickness,
+            gap,
+            max_rings,
+            crosshair_thickness,
+            crosshair_length,
+            rotation,
+        )
 
-    def __init__(self, code, position, diameter, ring_thickness, gap, max_rings, crosshair_thickness, crosshair_length, rotation):
-        """ Initialize AMoirePrimitive
-        """
+    def __init__(
+        self,
+        code,
+        position,
+        diameter,
+        ring_thickness,
+        gap,
+        max_rings,
+        crosshair_thickness,
+        crosshair_length,
+        rotation,
+    ):
+        """Initialize AMoirePrimitive"""
         if code != 6:
-            raise ValueError('MoirePrimitive code is 6')
-        super(AMMoirePrimitive, self).__init__(code, 'on')
+            raise ValueError("MoirePrimitive code is 6")
+        super(AMMoirePrimitive, self).__init__(code, "on")
         validate_coordinates(position)
         self.position = position
         self.diameter = diameter
@@ -644,7 +702,6 @@ class AMMoirePrimitive(AMPrimitive):
         self.crosshair_thickness = metric(self.crosshair_thickness)
         self.crosshair_length = metric(self.crosshair_length)
 
-
     def to_gerber(self, settings=None):
         data = dict(
             code=self.code,
@@ -655,18 +712,18 @@ class AMMoirePrimitive(AMPrimitive):
             max_rings=self.max_rings,
             crosshair_thickness=self.crosshair_thickness,
             crosshair_length=self.crosshair_length,
-            rotation=self.rotation
+            rotation=self.rotation,
         )
         fmt = "{code},{position},{diameter},{ring_thickness},{gap},{max_rings},{crosshair_thickness},{crosshair_length},{rotation}*"
         return fmt.format(**data)
 
     def to_primitive(self, units):
-        #raise NotImplementedError()
+        # raise NotImplementedError()
         return None
 
 
 class AMThermalPrimitive(AMPrimitive):
-    """ Aperture Macro Thermal primitive. Code 7.
+    """Aperture Macro Thermal primitive. Code 7.
 
     The thermal primitive is a ring (annulus) interrupted by four gaps.
     Exposure is always on.
@@ -704,9 +761,10 @@ class AMThermalPrimitive(AMPrimitive):
     ------
     ValueError, TypeError
     """
+
     @classmethod
     def from_gerber(cls, primitive):
-        modifiers = primitive.strip(' *').split(",")
+        modifiers = primitive.strip(" *").split(",")
         code = int(modifiers[0])
         position = (float(modifiers[1]), float(modifiers[2]))
         outer_diameter = float(modifiers[3])
@@ -717,8 +775,8 @@ class AMThermalPrimitive(AMPrimitive):
 
     def __init__(self, code, position, outer_diameter, inner_diameter, gap, rotation):
         if code != 7:
-            raise ValueError('ThermalPrimitive code is 7')
-        super(AMThermalPrimitive, self).__init__(code, 'on')
+            raise ValueError("ThermalPrimitive code is 7")
+        super(AMThermalPrimitive, self).__init__(code, "on")
         validate_coordinates(position)
         self.position = position
         self.outer_diameter = outer_diameter
@@ -745,7 +803,7 @@ class AMThermalPrimitive(AMPrimitive):
             outer_diameter=self.outer_diameter,
             inner_diameter=self.inner_diameter,
             gap=self.gap,
-            rotation=self.rotation
+            rotation=self.rotation,
         )
         fmt = "{code},{position},{outer_diameter},{inner_diameter},{gap},{rotation}*"
         return fmt.format(**data)
@@ -780,15 +838,14 @@ class AMThermalPrimitive(AMPrimitive):
         for i in range(num_steps + 1):
             current_angle = start_angle + (angle_step * i)
 
-            nextx = (center[0] + math.cos(current_angle) * radius)
-            nexty = (center[1] + math.sin(current_angle) * radius)
+            nextx = center[0] + math.cos(current_angle) * radius
+            nexty = center[1] + math.sin(current_angle) * radius
 
             points.append((nextx, nexty))
 
         return points
 
     def to_primitive(self, units):
-
         # We start with calculating the top right section, then duplicate it
 
         inner_radius = self.inner_diameter / 2.0
@@ -800,7 +857,7 @@ class AMThermalPrimitive(AMPrimitive):
 
         rotation_rad = math.radians(self.rotation)
         inner_start_angle = inner_offset_angle + rotation_rad
-        inner_end_angle =  math.pi / 2 - inner_offset_angle + rotation_rad
+        inner_end_angle = math.pi / 2 - inner_offset_angle + rotation_rad
 
         outer_start_angle = outer_offset_angle + rotation_rad
         outer_end_angle = math.pi / 2 - outer_offset_angle + rotation_rad
@@ -808,14 +865,20 @@ class AMThermalPrimitive(AMPrimitive):
         outlines = []
         aperture = Circle((0, 0), 0)
 
-        points = (self._approximate_arc_cw(inner_start_angle, inner_end_angle, inner_radius, self.position)
-                + list(reversed(self._approximate_arc_cw(outer_start_angle, outer_end_angle, outer_radius, self.position))))
+        points = self._approximate_arc_cw(
+            inner_start_angle, inner_end_angle, inner_radius, self.position
+        ) + list(
+            reversed(
+                self._approximate_arc_cw(
+                    outer_start_angle, outer_end_angle, outer_radius, self.position
+                )
+            )
+        )
         # Add in the last point since outlines should be closed
         points.append(points[0])
 
         # There are four outlines at rotated sections
         for rotation in [0, 90.0, 180.0, 270.0]:
-
             lines = []
             prev_point = rotate_point(points[0], rotation, self.position)
             for point in points[1:]:
@@ -825,13 +888,15 @@ class AMThermalPrimitive(AMPrimitive):
 
             prev_point = cur_point
 
-            outlines.append(Outline(lines, units=units, level_polarity=self._level_polarity))
+            outlines.append(
+                Outline(lines, units=units, level_polarity=self._level_polarity)
+            )
 
         return outlines
 
 
 class AMCenterLinePrimitive(AMPrimitive):
-    """ Aperture Macro Center Line primitive. Code 21.
+    """Aperture Macro Center Line primitive. Code 21.
 
     The center line primitive is a rectangle defined by its width, height, and center point.
 
@@ -875,13 +940,13 @@ class AMCenterLinePrimitive(AMPrimitive):
         height = primitive.height
         center = primitive.position
         rotation = math.degrees(primitive.rotation)
-        return cls(21, 'on', width, height, center, rotation)
+        return cls(21, "on", width, height, center, rotation)
 
     @classmethod
     def from_gerber(cls, primitive):
-        modifiers = primitive.strip(' *').split(",")
+        modifiers = primitive.strip(" *").split(",")
         code = int(modifiers[0])
-        exposure = 'on' if float(modifiers[1]) == 1 else 'off'
+        exposure = "on" if float(modifiers[1]) == 1 else "off"
         width = float(modifiers[2])
         height = float(modifiers[3])
         center = (float(modifiers[4]), float(modifiers[5]))
@@ -890,7 +955,7 @@ class AMCenterLinePrimitive(AMPrimitive):
 
     def __init__(self, code, exposure, width, height, center, rotation):
         if code != 21:
-            raise ValueError('CenterLinePrimitive code is 21')
+            raise ValueError("CenterLinePrimitive code is 21")
         super(AMCenterLinePrimitive, self).__init__(code, exposure)
         self.width = width
         self.height = height
@@ -911,17 +976,16 @@ class AMCenterLinePrimitive(AMPrimitive):
     def to_gerber(self, settings=None):
         data = dict(
             code=self.code,
-            exposure = '1' if self.exposure == 'on' else '0',
-            width = self.width,
-            height = self.height,
+            exposure="1" if self.exposure == "on" else "0",
+            width=self.width,
+            height=self.height,
             center="%.4g,%.4g" % self.center,
-            rotation=self.rotation
+            rotation=self.rotation,
         )
         fmt = "{code},{exposure},{width},{height},{center},{rotation}*"
         return fmt.format(**data)
 
     def to_primitive(self, units):
-
         x = self.center[0]
         y = self.center[1]
         half_width = self.width / 2.0
@@ -946,7 +1010,7 @@ class AMCenterLinePrimitive(AMPrimitive):
 
 
 class AMLowerLeftLinePrimitive(AMPrimitive):
-    """ Aperture Macro Lower Left Line primitive. Code 22.
+    """Aperture Macro Lower Left Line primitive. Code 22.
 
     The lower left line primitive is a rectangle defined by its width, height, and the lower left point.
 
@@ -983,11 +1047,12 @@ class AMLowerLeftLinePrimitive(AMPrimitive):
     ------
     ValueError, TypeError
     """
+
     @classmethod
     def from_gerber(cls, primitive):
-        modifiers = primitive.strip(' *').split(",")
+        modifiers = primitive.strip(" *").split(",")
         code = int(modifiers[0])
-        exposure = 'on' if float(modifiers[1]) == 1 else 'off'
+        exposure = "on" if float(modifiers[1]) == 1 else "off"
         width = float(modifiers[2])
         height = float(modifiers[3])
         lower_left = (float(modifiers[4]), float(modifiers[5]))
@@ -996,8 +1061,8 @@ class AMLowerLeftLinePrimitive(AMPrimitive):
 
     def __init__(self, code, exposure, width, height, lower_left, rotation):
         if code != 22:
-            raise ValueError('LowerLeftLinePrimitive code is 22')
-        super (AMLowerLeftLinePrimitive, self).__init__(code, exposure)
+            raise ValueError("LowerLeftLinePrimitive code is 22")
+        super(AMLowerLeftLinePrimitive, self).__init__(code, exposure)
         self.width = width
         self.height = height
         validate_coordinates(lower_left)
@@ -1017,11 +1082,11 @@ class AMLowerLeftLinePrimitive(AMPrimitive):
     def to_gerber(self, settings=None):
         data = dict(
             code=self.code,
-            exposure = '1' if self.exposure == 'on' else '0',
-            width = self.width,
-            height = self.height,
+            exposure="1" if self.exposure == "on" else "0",
+            width=self.width,
+            height=self.height,
             lower_left="%.4g,%.4g" % self.lower_left,
-            rotation=self.rotation
+            rotation=self.rotation,
         )
         fmt = "{code},{exposure},{width},{height},{lower_left},{rotation}*"
         return fmt.format(**data)

@@ -23,9 +23,8 @@ This module provides contexts for rendering images of gerber layers. Currently
 SVG is the only supported format.
 """
 
-from .render import RenderSettings, GerberContext
 from .cairo_backend import GerberCairoContext
 
 available_renderers = {
-    'cairo': GerberCairoContext,
+    "cairo": GerberCairoContext,
 }

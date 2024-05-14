@@ -9,7 +9,7 @@
 The Excellon format is the most common format for exporting PCB drill
 information. The Excellon format is used to program CNC drilling macines for
 drilling holes in PCBs. As such, excellon files are sometimes refererred to as
-NC-drill files.  The Excellon format reference is available 
+NC-drill files.  The Excellon format reference is available
 `here <http://www.excellon.com/manuals/program.htm>`_. The :mod:`excellon`
 submodule implements calsses to read and write excellon files without having
 to know the precise details of the format.
@@ -27,7 +27,7 @@ Functions
 The :mod:`excellon` module defines the following functions:
 
 .. autofunction:: gerber.excellon.read
-    
+
 
 Classes
 -------
@@ -35,8 +35,7 @@ The :mod:`excellon` module defines the following classes:
 
 .. autoclass:: gerber.excellon.ExcellonFile
     :members:
-    
+
 
 .. autoclass:: gerber.excellon.ExcellonParser
     :members:
-    

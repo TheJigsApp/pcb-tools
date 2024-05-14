@@ -8,8 +8,7 @@ from ..utils import *
 
 
 def test_zero_suppression():
-    """ Test gerber value parser and writer handle zero suppression correctly.
-    """
+    """Test gerber value parser and writer handle zero suppression correctly."""
     # Default format
     fmt = (2, 5)
 
@@ -64,8 +63,7 @@ def test_zero_suppression():
 
 
 def test_format():
-    """ Test gerber value parser and writer handle format correctly
-    """
+    """Test gerber value parser and writer handle format correctly"""
     zero_suppression = "leading"
     test_cases = [
         ((2, 7), "1", 0.0000001),
@@ -110,8 +108,7 @@ def test_format():
 
 
 def test_decimal_truncation():
-    """ Test decimal_string truncates value to the correct precision
-    """
+    """Test decimal_string truncates value to the correct precision"""
     value = 1.123456789
     for x in range(10):
         result = decimal_string(value, precision=x)
@@ -120,8 +117,7 @@ def test_decimal_truncation():
 
 
 def test_decimal_padding():
-    """ Test decimal_string padding
-    """
+    """Test decimal_string padding"""
     value = 1.123
     assert decimal_string(value, precision=3, padding=True) == "1.123"
     assert decimal_string(value, precision=4, padding=True) == "1.1230"
@@ -131,24 +127,21 @@ def test_decimal_padding():
 
 
 def test_parse_format_validation():
-    """ Test parse_gerber_value() format validation
-    """
+    """Test parse_gerber_value() format validation"""
     pytest.raises(ValueError, parse_gerber_value, "00001111", (7, 5))
     pytest.raises(ValueError, parse_gerber_value, "00001111", (5, 8))
     pytest.raises(ValueError, parse_gerber_value, "00001111", (13, 1))
 
 
 def test_write_format_validation():
-    """ Test write_gerber_value() format validation
-    """
+    """Test write_gerber_value() format validation"""
     pytest.raises(ValueError, write_gerber_value, 69.0, (7, 5))
     pytest.raises(ValueError, write_gerber_value, 69.0, (5, 8))
     pytest.raises(ValueError, write_gerber_value, 69.0, (13, 1))
 
 
 def test_detect_format_with_short_file():
-    """ Verify file format detection works with short files
-    """
+    """Verify file format detection works with short files"""
     assert "unknown" == detect_file_format("gerber/tests/__init__.py")
 
 

@@ -22,4 +22,3 @@ Excellon DRR File module
 
 Extra parsers for allegro misc files that can be useful when the Excellon file doesn't contain parameter information
 """
-

@@ -19,6 +19,3 @@ The :mod:`operations` module defines the following functions:
 .. autofunction:: gerber.operations.to_inch
 .. autofunction:: gerber.operations.to_metric
 .. autofunction:: gerber.operations.offset
-
-
-

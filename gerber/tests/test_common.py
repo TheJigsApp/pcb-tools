@@ -15,8 +15,7 @@ TOP_COPPER_FILE = os.path.join(os.path.dirname(__file__), "resources/top_copper.
 
 
 def test_file_type_detection():
-    """ Test file type detection
-    """
+    """Test file type detection"""
     ncdrill = read(NCDRILL_FILE)
     top_copper = read(TOP_COPPER_FILE)
     assert isinstance(ncdrill, ExcellonFile)
@@ -33,6 +32,5 @@ def test_load_from_string():
 
 
 def test_file_type_validation():
-    """ Test file format validation
-    """
+    """Test file format validation"""
     pytest.raises(ParseError, read, __file__)

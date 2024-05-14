@@ -35,6 +35,3 @@ We are working on adding the following features to PCB Tools:
 - Design Rules Checking
 - Editing
 - Panelization
-
-
-

@@ -15,8 +15,7 @@ def test_excellon_statement_implementation():
 
 
 def test_excellontstmt():
-    """ Smoke test ExcellonStatement
-    """
+    """Smoke test ExcellonStatement"""
     stmt = ExcellonStatement()
     stmt.to_inch()
     stmt.to_metric()
@@ -24,8 +23,7 @@ def test_excellontstmt():
 
 
 def test_excellontool_factory():
-    """ Test ExcellonTool factory methods
-    """
+    """Test ExcellonTool factory methods"""
     exc_line = "T8F01B02S00003H04Z05C0.12500"
     settings = FileSettings(
         format=(2, 5), zero_suppression="trailing", units="inch", notation="absolute"
@@ -59,8 +57,7 @@ def test_excellontool_factory():
 
 
 def test_excellontool_dump():
-    """ Test ExcellonTool to_excellon()
-    """
+    """Test ExcellonTool to_excellon()"""
     exc_lines = [
         "T01F0S0C0.01200",
         "T02F0S0C0.01500",
@@ -140,8 +137,7 @@ def test_excellontool_equality():
 
 
 def test_toolselection_factory():
-    """ Test ToolSelectionStmt factory method
-    """
+    """Test ToolSelectionStmt factory method"""
     stmt = ToolSelectionStmt.from_excellon("T01")
     assert stmt.tool == 1
     assert stmt.compensation_index == None
@@ -154,8 +150,7 @@ def test_toolselection_factory():
 
 
 def test_toolselection_dump():
-    """ Test ToolSelectionStmt to_excellon()
-    """
+    """Test ToolSelectionStmt to_excellon()"""
     lines = ["T01", "T0223", "T10", "T09", "T0000"]
     for line in lines:
         stmt = ToolSelectionStmt.from_excellon(line)
@@ -163,8 +158,7 @@ def test_toolselection_dump():
 
 
 def test_z_axis_infeed_rate_factory():
-    """ Test ZAxisInfeedRateStmt factory method
-    """
+    """Test ZAxisInfeedRateStmt factory method"""
     stmt = ZAxisInfeedRateStmt.from_excellon("F01")
     assert stmt.rate == 1
     stmt = ZAxisInfeedRateStmt.from_excellon("F2")
@@ -174,8 +168,7 @@ def test_z_axis_infeed_rate_factory():
 
 
 def test_z_axis_infeed_rate_dump():
-    """ Test ZAxisInfeedRateStmt to_excellon()
-    """
+    """Test ZAxisInfeedRateStmt to_excellon()"""
     inputs = [("F01", "F01"), ("F2", "F02"), ("F00003", "F03")]
     for input_rate, expected_output in inputs:
         stmt = ZAxisInfeedRateStmt.from_excellon(input_rate)
@@ -183,8 +176,7 @@ def test_z_axis_infeed_rate_dump():
 
 
 def test_coordinatestmt_factory():
-    """ Test CoordinateStmt factory method
-    """
+    """Test CoordinateStmt factory method"""
     settings = FileSettings(
         format=(2, 5), zero_suppression="trailing", units="inch", notation="absolute"
     )
@@ -219,8 +211,7 @@ def test_coordinatestmt_factory():
 
 
 def test_coordinatestmt_dump():
-    """ Test CoordinateStmt to_excellon()
-    """
+    """Test CoordinateStmt to_excellon()"""
     lines = [
         "X278207Y65293",
         "X243795",
@@ -245,7 +236,6 @@ def test_coordinatestmt_dump():
 
 
 def test_coordinatestmt_conversion():
-
     settings = FileSettings()
     settings.units = "metric"
     stmt = CoordinateStmt.from_excellon("X254Y254", settings)
@@ -373,8 +363,7 @@ def test_repeathole_str():
 
 
 def test_commentstmt_factory():
-    """ Test CommentStmt factory method
-    """
+    """Test CommentStmt factory method"""
     line = ";Layer_Color=9474304"
     stmt = CommentStmt.from_excellon(line)
     assert stmt.comment == line[1:]
@@ -389,8 +378,7 @@ def test_commentstmt_factory():
 
 
 def test_commentstmt_dump():
-    """ Test CommentStmt to_excellon()
-    """
+    """Test CommentStmt to_excellon()"""
     lines = [";Layer_Color=9474304", ";FILE_FORMAT=2:5", ";TYPE=PLATED"]
     for line in lines:
         stmt = CommentStmt.from_excellon(line)
@@ -517,8 +505,7 @@ def test_endofprogramstmt_offset():
 
 
 def test_unitstmt_factory():
-    """ Test UnitStmt factory method
-    """
+    """Test UnitStmt factory method"""
     line = "INCH,LZ"
     stmt = UnitStmt.from_excellon(line)
     assert stmt.units == "inch"
@@ -541,8 +528,7 @@ def test_unitstmt_factory():
 
 
 def test_unitstmt_dump():
-    """ Test UnitStmt to_excellon()
-    """
+    """Test UnitStmt to_excellon()"""
     lines = ["INCH,LZ", "INCH,TZ", "METRIC,LZ", "METRIC,TZ"]
     for line in lines:
         stmt = UnitStmt.from_excellon(line)
@@ -560,8 +546,7 @@ def test_unitstmt_conversion():
 
 
 def test_incrementalmode_factory():
-    """ Test IncrementalModeStmt factory method
-    """
+    """Test IncrementalModeStmt factory method"""
     line = "ICI,ON"
     stmt = IncrementalModeStmt.from_excellon(line)
     assert stmt.mode == "on"
@@ -572,8 +557,7 @@ def test_incrementalmode_factory():
 
 
 def test_incrementalmode_dump():
-    """ Test IncrementalModeStmt to_excellon()
-    """
+    """Test IncrementalModeStmt to_excellon()"""
     lines = ["ICI,ON", "ICI,OFF"]
     for line in lines:
         stmt = IncrementalModeStmt.from_excellon(line)
@@ -581,14 +565,12 @@ def test_incrementalmode_dump():
 
 
 def test_incrementalmode_validation():
-    """ Test IncrementalModeStmt input validation
-    """
+    """Test IncrementalModeStmt input validation"""
     pytest.raises(ValueError, IncrementalModeStmt, "OFF-ISH")
 
 
 def test_versionstmt_factory():
-    """ Test VersionStmt factory method
-    """
+    """Test VersionStmt factory method"""
     line = "VER,1"
     stmt = VersionStmt.from_excellon(line)
     assert stmt.version == 1
@@ -599,8 +581,7 @@ def test_versionstmt_factory():
 
 
 def test_versionstmt_dump():
-    """ Test VersionStmt to_excellon()
-    """
+    """Test VersionStmt to_excellon()"""
     lines = ["VER,1", "VER,2"]
     for line in lines:
         stmt = VersionStmt.from_excellon(line)
@@ -608,14 +589,12 @@ def test_versionstmt_dump():
 
 
 def test_versionstmt_validation():
-    """ Test VersionStmt input validation
-    """
+    """Test VersionStmt input validation"""
     pytest.raises(ValueError, VersionStmt, 3)
 
 
 def test_formatstmt_factory():
-    """ Test FormatStmt factory method
-    """
+    """Test FormatStmt factory method"""
     line = "FMAT,1"
     stmt = FormatStmt.from_excellon(line)
     assert stmt.format == 1
@@ -626,8 +605,7 @@ def test_formatstmt_factory():
 
 
 def test_formatstmt_dump():
-    """ Test FormatStmt to_excellon()
-    """
+    """Test FormatStmt to_excellon()"""
     lines = ["FMAT,1", "FMAT,2"]
     for line in lines:
         stmt = FormatStmt.from_excellon(line)
@@ -635,14 +613,12 @@ def test_formatstmt_dump():
 
 
 def test_formatstmt_validation():
-    """ Test FormatStmt input validation
-    """
+    """Test FormatStmt input validation"""
     pytest.raises(ValueError, FormatStmt, 3)
 
 
 def test_linktoolstmt_factory():
-    """ Test LinkToolStmt factory method
-    """
+    """Test LinkToolStmt factory method"""
     line = "1/2/3/4"
     stmt = LinkToolStmt.from_excellon(line)
     assert stmt.linked_tools == [1, 2, 3, 4]
@@ -653,8 +629,7 @@ def test_linktoolstmt_factory():
 
 
 def test_linktoolstmt_dump():
-    """ Test LinkToolStmt to_excellon()
-    """
+    """Test LinkToolStmt to_excellon()"""
     lines = ["1/2/3/4", "5/6/7"]
     for line in lines:
         stmt = LinkToolStmt.from_excellon(line)
@@ -662,8 +637,7 @@ def test_linktoolstmt_dump():
 
 
 def test_measmodestmt_factory():
-    """ Test MeasuringModeStmt factory method
-    """
+    """Test MeasuringModeStmt factory method"""
     line = "M72"
     stmt = MeasuringModeStmt.from_excellon(line)
     assert stmt.units == "inch"
@@ -674,8 +648,7 @@ def test_measmodestmt_factory():
 
 
 def test_measmodestmt_dump():
-    """ Test MeasuringModeStmt to_excellon()
-    """
+    """Test MeasuringModeStmt to_excellon()"""
     lines = ["M71", "M72"]
     for line in lines:
         stmt = MeasuringModeStmt.from_excellon(line)
@@ -683,8 +656,7 @@ def test_measmodestmt_dump():
 
 
 def test_measmodestmt_validation():
-    """ Test MeasuringModeStmt input validation
-    """
+    """Test MeasuringModeStmt input validation"""
     pytest.raises(ValueError, MeasuringModeStmt.from_excellon, "M70")
     pytest.raises(ValueError, MeasuringModeStmt, "millimeters")
 

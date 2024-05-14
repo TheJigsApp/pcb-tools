@@ -23,7 +23,7 @@ from .utils import detect_file_format
 
 
 def read(filename):
-    """ Read a gerber or excellon file and return a representative object.
+    """Read a gerber or excellon file and return a representative object.
 
     Parameters
     ----------
@@ -36,13 +36,13 @@ def read(filename):
         CncFile object representing the file, either GerberFile, ExcellonFile,
         or IPCNetlist. Returns None if file is not of the proper type.
     """
-    with open(filename, 'r', encoding="utf-8") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         data = f.read()
     return loads(data, filename)
 
 
 def loads(data, filename=None):
-    """ Read gerber or excellon file contents from a string and return a
+    """Read gerber or excellon file contents from a string and return a
     representative object.
 
     Parameters
@@ -61,11 +61,11 @@ def loads(data, filename=None):
     """
 
     fmt = detect_file_format(data)
-    if fmt == 'rs274x':
+    if fmt == "rs274x":
         return rs274x.loads(data, filename=filename)
-    elif fmt == 'excellon':
+    elif fmt == "excellon":
         return excellon.loads(data, filename=filename)
-    elif fmt == 'ipc_d_356':
+    elif fmt == "ipc_d_356":
         return ipc356.loads(data, filename=filename)
     else:
-        raise ParseError('Unable to detect file format')
+        raise ParseError("Unable to detect file format")

@@ -15,8 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" This module provides RS-274-X AM macro evaluation.
-"""
+"""This module provides RS-274-X AM macro evaluation."""
 
 
 class OpCode:
@@ -52,7 +51,6 @@ class OpCode:
 
 
 def eval_macro(instructions, parameters={}):
-
     if not isinstance(parameters, type({})):
         p = {}
         for i, val in enumerate(parameters):

@@ -9,8 +9,7 @@ from ..cam import CamFile, FileSettings
 
 
 def test_filesettings_defaults():
-    """ Test FileSettings default values
-    """
+    """Test FileSettings default values"""
     fs = FileSettings()
     assert fs.format == (2, 5)
     assert fs.notation == "absolute"
@@ -19,8 +18,7 @@ def test_filesettings_defaults():
 
 
 def test_filesettings_dict():
-    """ Test FileSettings Dict
-    """
+    """Test FileSettings Dict"""
     fs = FileSettings()
     assert fs["format"] == (2, 5)
     assert fs["notation"] == "absolute"
@@ -29,8 +27,7 @@ def test_filesettings_dict():
 
 
 def test_filesettings_assign():
-    """ Test FileSettings attribute assignment
-    """
+    """Test FileSettings attribute assignment"""
     fs = FileSettings()
     fs.units = "test1"
     fs.notation = "test2"
@@ -43,8 +40,7 @@ def test_filesettings_assign():
 
 
 def test_filesettings_dict_assign():
-    """ Test FileSettings dict-style attribute assignment
-    """
+    """Test FileSettings dict-style attribute assignment"""
     fs = FileSettings()
     fs["units"] = "metric"
     fs["notation"] = "incremental"
@@ -57,14 +53,12 @@ def test_filesettings_dict_assign():
 
 
 def test_camfile_init():
-    """ Smoke test CamFile test
-    """
+    """Smoke test CamFile test"""
     cf = CamFile()
 
 
 def test_camfile_settings():
-    """ Test CamFile Default Settings
-    """
+    """Test CamFile Default Settings"""
     cf = CamFile()
     assert cf.settings == FileSettings()
 
@@ -75,8 +69,7 @@ def test_bounds_override_smoketest():
 
 
 def test_zeros():
-    """ Test zero/zero_suppression interaction
-    """
+    """Test zero/zero_suppression interaction"""
     fs = FileSettings()
     assert fs.zero_suppression == "trailing"
     assert fs.zeros == "leading"
@@ -115,8 +108,7 @@ def test_zeros():
 
 
 def test_filesettings_validation():
-    """ Test FileSettings constructor argument validation
-    """
+    """Test FileSettings constructor argument validation"""
     # absolute-ish is not a valid notation
     pytest.raises(ValueError, FileSettings, "absolute-ish", "inch", None, (2, 5), None)
 
