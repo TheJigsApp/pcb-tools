@@ -282,13 +282,15 @@ def guess_layer_class(filename):
 
 def guess_layer_class_by_content(filename):
     try:
-        file = open(filename, "r")
-        for line in file:
-            for hint in hints:
-                if len(hint.content) > 0:
+        with open(filename, "r") as file:
+            for line in file:
+                for hint in hints:
+                    if len(hint.content) <= 0:
+                        continue
                     patterns = [r"^(.*){}(.*)$".format(x) for x in hint.content]
-                    if any(re.findall(p, line, re.IGNORECASE) for p in patterns):
-                        return hint.layer
+                    if not any(re.findall(p, line, re.IGNORECASE) for p in patterns):
+                        continue
+                    return hint.layer
     except:
         pass
 
