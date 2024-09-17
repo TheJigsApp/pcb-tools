@@ -1,7 +1,7 @@
 [project]
-requires-python='>=3.8'
+requires-python='>=3.10'
 name="pcb-tools"
-version= "0.1.7"
+version= "0.1.8"
 authors=[
     {name="Paulo Henrique Silva", email='ph.silva@gmail.com'}, 
     {name="Hamilton Kibbe", email='ham@hamiltonkib.be'}]
@@ -15,17 +15,11 @@ readme="README.md"
 keywords=["pcb", "gerber", "tools"]
 
 
-dependencies = [
-    'click>=7.0',
-    'pandas',
-    'numpy',
-]
-
 [project.license]
 file="LICENSE"
 name="APACHE"
 
-[project.scripts]
+#[project.scripts]
 
 [project.urls]
 github="http://github.com/curtacircuitos/pcb-tools"
@@ -40,11 +34,11 @@ dependencies = {file = ["requirements.txt"]}
 allow-direct-references = true
 
 [tool.setuptools.packages.find]
-where=['src', 'src/gerber', 'src/gerber.render']
+where=['src']#, 'src/gerber', 'src/gerber.render']
 
 [build-system]
 requires = [
-    "setuptools>=60",
+    "setuptools>=70",
     "setuptools-scm>=8.0"
 ]
 
